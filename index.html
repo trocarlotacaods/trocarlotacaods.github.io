@@ -1,45 +1,1097 @@
-<!doctype html>
+<!DOCTYPE html>
+<!--
+  Troca de Lotação — página oficial (GitHub Pages). GERADA por dev/gerar-site.js: não edite à mão.
+  A tela fica aqui; as regras, a senha e os dados ficam no Google Apps Script.
+  Os pedidos vão sem cookies do Google, então várias contas Google no navegador não atrapalham.
+-->
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'none'; form-action 'none'">
 <meta name="theme-color" content="#003D73">
 <meta name="description" content="Troca de Lotação — Secretaria Municipal de Desenvolvimento Social de Uberlândia">
-<title>Troca de Lotação · Desenvolvimento Social</title>
+<meta name="referrer" content="no-referrer">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23005BAA'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'%3E%E2%87%84%3C/text%3E%3C/svg%3E">
+<script>
+/* Ponte para o Apps Script: imita o google.script.run usando POST sem cookies (credentials: 'omit'). */
+(function () {
+  var APP = "https://script.google.com/macros/s/AKfycbwuVPSrlq49T7RpP8zT3LtdR2QMJt-rKEQfllwm8eeP8B1kipyasv209nQJ3ZVmIJEc/exec";
+  function chamar(fn, a) {
+    return fetch(APP, { method: 'POST', credentials: 'omit', redirect: 'follow', cache: 'no-store',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn: fn, a: a }) })
+      .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); });
+  }
+  function semConexao() {
+    return new Error(navigator.onLine === false ? 'Sem internet. Confira a conexão e tente de novo.'
+      : 'Não foi possível falar com o sistema agora. Tente de novo em instantes.');
+  }
+  function mk(ok, no) {
+    return new Proxy({}, { get: function (_, fn) {
+      if (fn === 'withSuccessHandler') return function (f) { return mk(f, no); };
+      if (fn === 'withFailureHandler') return function (f) { return mk(ok, f); };
+      return function () {
+        var a = Array.prototype.slice.call(arguments);
+        chamar(fn, a).then(function (j) {
+          if (j && j.erro) { if (no) no(new Error(j.erro)); } else if (ok) ok(j ? j.r : null);
+        }).catch(function () { if (no) no(semConexao()); });
+      };
+    } });
+  }
+  window.google = { script: { run: mk(null, null) } };
+  // código de senha nova vindo do e-mail (?t=...): lê e tira da barra de endereço
+  var t = (new URLSearchParams(location.search).get('t') || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 40);
+  if (t) { try { history.replaceState(null, '', location.pathname); } catch (e) {} }
+  window.PARAMS = { t: t };
+})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<title>Troca de Lotação · Desenvolvimento Social</title>
 <style>
-  html,body{margin:0;height:100%;background:#F2F5F9;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
-  #app{position:fixed;inset:0;width:100%;height:100%;border:0;display:block}
-  #carregando{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:#475569;font-size:18px;font-weight:700;background:#F2F5F9;transition:opacity .3s}
-  #carregando.some{opacity:0;pointer-events:none}
-  .giro{width:40px;height:40px;border:4px solid #DDE5ED;border-top-color:#005BAA;border-radius:50%;animation:g .8s linear infinite}
-  @keyframes g{to{transform:rotate(360deg)}}
-  #direto{display:none;font-size:16px;color:#003D73}
-  @media (prefers-color-scheme: dark){html,body,#carregando{background:#0F172A;color:#93A2B8}#direto{color:#8FC0FA}}
+/* =========================================================
+   Tamanhos em rem: 1rem = tamanho da letra da página (16px).
+   "Letra maior" (Perfil > Aparência) só muda o html{font-size} e tudo cresce junto.
+   ========================================================= */
+:root{
+  --blue:#005BAA;--blue-dark:#003D73;--blue-soft:#E7F1FA;
+  --yellow:#F4C400;--yellow-dark:#C69E00;
+  --bg:#F2F5F9;--surface:#fff;--surface2:#EEF2F7;--card:#fff;
+  --ink:#0F172A;--muted:#475569;--line:#DEE5EC;
+  --danger:#BD3F3F;--danger-soft:#FBEAEA;
+  --ok:#227A52;--ok-soft:#E3F3EA;
+  --input-bg:#fff;--input-ink:#0F172A;
+  --radius:16px;--radius-sm:12px;
+  --shadow:0 4px 16px rgba(20,40,66,.08);
+  --shadow-sm:0 1px 4px rgba(20,40,66,.06);
+  --largura:760px;
+}
+body[data-theme="escuro"]{
+  --blue:#4C93F0;--blue-dark:#8FC0FA;--blue-soft:rgba(76,147,240,.18);
+  --bg:#0F172A;--surface:#1B263B;--surface2:#22304A;--card:#1B263B;
+  --ink:#E7ECF3;--muted:#93A2B8;--line:#2E3D57;
+  --danger:#F0716B;--danger-soft:rgba(240,113,107,.16);
+  --ok:#4FCE93;--ok-soft:rgba(79,206,147,.16);
+  --input-bg:#16203A;--input-ink:#E7ECF3;
+  --shadow:0 4px 16px rgba(0,0,0,.35);--shadow-sm:0 1px 4px rgba(0,0,0,.3);
+}
+body[data-theme="protecao"]{
+  --blue:#8C6A3E;--blue-dark:#5E4526;--blue-soft:#EFE2C7;
+  --yellow:#D9A441;--yellow-dark:#A97D28;
+  --bg:#F3E9D4;--surface:#FBF3E2;--surface2:#ECE0C4;--card:#FBF3E2;
+  --ink:#3B3021;--muted:#7A6A4F;--line:#E1D2AC;
+  --danger:#B5533F;--danger-soft:#F3E0D2;--ok:#57713C;--ok-soft:#E3EBD3;
+  --input-bg:#FFFBF2;--input-ink:#3B3021;
+  --shadow:0 4px 14px rgba(90,70,30,.12);--shadow-sm:0 1px 4px rgba(90,70,30,.1);
+}
+body[data-theme="verde"]{
+  --blue:#0E8A4B;--blue-dark:#0A5C33;--blue-soft:#E2F5EA;
+  --bg:#F2F9F4;--surface:#fff;--surface2:#EAF6EE;--card:#fff;
+  --ink:#0F172A;--muted:#4B5D53;--line:#D9EBE0;
+  --shadow:0 4px 16px rgba(14,80,45,.08);--shadow-sm:0 1px 4px rgba(14,80,45,.06);
+}
+
+/* ---------- base ---------- */
+*{box-sizing:border-box}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+html.letra-grande{font-size:19px}
+html,body{margin:0;padding:0;min-height:100%;font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{font-size:1rem;line-height:1.5;transition:background .25s ease,color .25s ease}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;transition:transform .06s ease,filter .15s ease,background .15s ease}
+button:active{transform:scale(.98)}
+button:disabled{opacity:.6;cursor:default;transform:none}
+h1,h2,h3{margin:0}
+#app{min-height:100vh;max-width:var(--largura);margin:auto;background:var(--bg)}
+.hidden{display:none!important}
+.mt{margin-top:.625rem}
+
+/* ---------- topo ---------- */
+.topbar{background:linear-gradient(135deg,var(--blue-dark),var(--blue));color:#fff;padding:1.25rem 1.25rem 1.5rem;border-radius:0 0 1.25rem 1.25rem;box-shadow:var(--shadow)}
+.topbar-row{display:flex;justify-content:space-between;gap:.75rem;align-items:flex-start}
+.tb-titulo{flex:1;min-width:0}
+.eyebrow{text-transform:uppercase;letter-spacing:.1em;font-size:.72rem;font-weight:800;opacity:.85}
+.topbar h1{font-size:1.75rem;margin-top:.25rem;letter-spacing:-.02em;font-weight:800;line-height:1.1}
+.who{flex-shrink:0;max-width:45%;text-align:right;font-size:.82rem;line-height:1.35;overflow-wrap:anywhere;opacity:.95}
+.who b{display:block;font-size:1rem}
+.who .badge{font-size:.7rem;padding:.2rem .55rem;margin-top:.35rem}
+.logout{display:inline-flex;align-items:center;justify-content:center;margin-top:.5rem;padding:.4rem .85rem;border:0;border-radius:8px;background:#BD3F3F;color:#fff;font-size:.82rem;font-weight:800}
+.logout:hover{filter:brightness(1.08)}.logout:active{transform:scale(.97)}
+
+/* ---------- conteúdo ---------- */
+main{padding:1rem 1rem 7rem}
+.center{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:1.5rem 1rem 3rem}
+.login-wrap{width:100%;max-width:440px}
+.brand{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
+.brand-icon{width:3rem;height:3rem;flex-shrink:0;background:linear-gradient(135deg,var(--blue-dark),var(--blue));border-radius:.8rem;display:grid;place-items:center;color:#fff;font-size:1.35rem;font-weight:900;box-shadow:var(--shadow-sm)}
+.brand small{display:block;color:var(--muted);font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:.7rem}
+.brand h1{font-size:1.9rem;line-height:1.1;letter-spacing:-.02em;font-weight:800;margin:.15rem 0 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;box-shadow:var(--shadow-sm);margin-bottom:1rem}
+.section-title{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;margin:.25rem 0 .6rem}
+.card>.section-title:first-child{margin-top:0}
+.field{margin-bottom:.9rem}
+label{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:var(--muted);margin-bottom:.35rem}
+input,select,textarea{width:100%;border:1px solid var(--line);border-radius:var(--radius-sm);min-height:3rem;padding:.65rem .85rem;font-size:1rem;background:var(--input-bg);color:var(--input-ink)}
+textarea{min-height:5.5rem;resize:vertical;line-height:1.45}
+input::placeholder,textarea::placeholder{color:#8593A6}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
+.code{text-align:center;text-transform:uppercase;letter-spacing:.2em;font-weight:900;font-size:1.4rem}
+.helper{font-size:.875rem;color:var(--muted);line-height:1.55;font-weight:500;margin:.35rem 0}
+.msg{margin-top:.5rem;font-size:.875rem;font-weight:700}.err{color:var(--danger)}.ok{color:var(--ok)}
+.msg:empty{display:none}
+
+/* ---------- botões ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border:none;border-radius:var(--radius-sm);min-height:3rem;padding:.65rem 1rem;font-size:1rem;font-weight:700;width:100%;text-align:center;line-height:1.25}
+.btn-primary{background:var(--blue);color:#fff}.btn-primary:hover{filter:brightness(1.08)}
+.btn-yellow{background:var(--yellow);color:#17324F}.btn-yellow:hover{filter:brightness(1.05)}
+.btn-ghost{background:var(--surface2);color:var(--ink)}.btn-ghost:hover{filter:brightness(.96)}
+body[data-theme="escuro"] .btn-ghost:hover{filter:brightness(1.15)}
+.btn-danger{background:var(--danger-soft);color:var(--danger)}.btn-danger:hover{filter:brightness(.97)}
+.btn-ok{background:var(--ok-soft);color:var(--ok)}.btn-ok:hover{filter:brightness(.97)}
+.btn-sm{padding:.45rem .85rem;font-size:.875rem;width:auto;min-height:2.4rem}
+.btn-row{display:flex;gap:.5rem;flex-wrap:wrap}.btn-row>*{flex:1 1 auto}
+.linkbtn{background:none;border:0;color:var(--blue-dark);font-weight:700;font-size:.9rem;padding:.5rem .25rem;text-decoration:underline}
+.linkbtn.inline{padding:0;font-size:inherit}
+.links-acesso{display:flex;flex-direction:column;align-items:center;margin-top:.5rem}
+.link{display:flex;gap:.5rem;align-items:center;background:var(--bg);border:1px solid var(--line);padding:.5rem .65rem;border-radius:10px}
+.link code{flex:1;overflow:auto;white-space:nowrap;font-size:.95rem;font-weight:800;letter-spacing:.04em}
+.copy{background:var(--blue);color:#fff;border:0;border-radius:8px;padding:.45rem .75rem;font-weight:800;font-size:.8rem}
+
+/* ---------- vagas e listas ---------- */
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.75rem}
+.vaga h3{font-size:1.1rem;color:var(--blue-dark);line-height:1.3}
+.meta{color:var(--muted);font-size:.875rem;line-height:1.5;margin-top:.15rem}
+.badges{display:flex;gap:.35rem;flex-wrap:wrap;margin:.6rem 0}
+.badge{display:inline-flex;align-items:center;padding:.22rem .6rem;border-radius:999px;background:var(--blue-soft);color:var(--blue-dark);font-size:.75rem;font-weight:800;white-space:nowrap}
+.badge-yellow{background:#FFF4BE;color:#795F00}.badge-green{background:var(--ok-soft);color:var(--ok)}.badge-red{background:var(--danger-soft);color:var(--danger)}
+.badge-star{background:linear-gradient(135deg,#FFE27A,#F4C400);color:#4A3A00}
+.vaga.perfeita{border:2px solid var(--yellow);box-shadow:0 4px 18px rgba(244,196,0,.22)}
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--muted);font-size:.95rem}.empty h3{color:var(--ink);margin-bottom:.4rem;font-size:1.1rem}
+.person{border-top:1px solid var(--line);padding:.85rem 0}.person:first-child{border-top:0;padding-top:0}
+.person-title{font-weight:800;font-size:1rem}
+.person-sub{font-size:.85rem;color:var(--muted);line-height:1.5;word-break:break-word}
+.admin-actions{display:flex;gap:.4rem;margin-top:.6rem;flex-wrap:wrap}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.5rem}
+.chip{display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .35rem .3rem .75rem;border-radius:999px;background:var(--blue-soft);color:var(--blue-dark);font-size:.85rem;font-weight:700}
+.chip button{border:0;background:var(--blue);color:#fff;border-radius:50%;width:1.4rem;height:1.4rem;font-size:.85rem;line-height:1;padding:0}
+
+/* ---------- caixas de aviso ---------- */
+.contato-box,.info-box{margin-top:.6rem;padding:.7rem .85rem;border-radius:10px;font-size:.875rem;line-height:1.5}
+.contato-box{background:var(--ok-soft);color:#1B5E3F}
+body[data-theme="escuro"] .contato-box{color:#B7F0D2}
+body[data-theme="protecao"] .contato-box{color:#3B4A2C}
+.info-box{background:var(--blue-soft);color:var(--blue-dark)}
+.warn-box,.ok-box,.alert-box{margin:0 0 .85rem;padding:.7rem .85rem;border-radius:10px;font-size:.875rem;line-height:1.5;font-weight:600}
+.warn-box{background:#FFF4BE;color:#5C4800}
+.ok-box{background:var(--ok-soft);color:var(--ok)}
+.alert-box{background:var(--danger-soft);border-left:4px solid var(--danger);color:var(--danger)}
+.senha-box{margin-top:.75rem;padding:.85rem;border:2px dashed var(--blue);border-radius:12px;background:var(--blue-soft)}
+.outro-box{margin-top:.6rem;padding:.75rem;border:2px dashed var(--yellow-dark);border-radius:12px;background:#FFFBEA}
+body[data-theme="escuro"] .outro-box{background:rgba(244,196,0,.08)}
+.privacy-note{display:flex;gap:.65rem;align-items:flex-start;background:var(--ok-soft);border-radius:var(--radius);padding:.85rem 1rem;margin-bottom:1rem}
+.privacy-note .pn-icon{font-size:1.2rem;line-height:1.2}
+.privacy-note p{margin:0 0 .4rem;font-size:.85rem;line-height:1.5;color:#1B5E3F;font-weight:500}
+.privacy-note p:last-child{margin-bottom:0}
+body[data-theme="escuro"] .privacy-note p{color:#B7F0D2}
+body[data-theme="protecao"] .privacy-note p{color:#3B4A2C}
+.check{display:flex;gap:.6rem;align-items:flex-start;text-transform:none;letter-spacing:0;font-size:.9rem;font-weight:600;color:var(--ink);margin:.5rem 0;line-height:1.45}
+.check input{width:1.25rem;height:1.25rem;min-height:0;flex-shrink:0;margin:.1rem 0 0;padding:0;accent-color:var(--blue)}
+
+/* ---------- senha com "Mostrar" ---------- */
+.pw{position:relative}.pw input{padding-right:5.5rem}
+.pw button{position:absolute;right:.4rem;top:50%;transform:translateY(-50%);border:0;background:var(--surface2);border-radius:8px;padding:.35rem .6rem;font-size:.75rem;font-weight:800;color:var(--muted)}
+
+/* ---------- barra de baixo ---------- */
+.nav{position:fixed;left:0;right:0;bottom:0;margin:auto;max-width:var(--largura);background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(var(--n,4),1fr);gap:4px;padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:20;box-shadow:0 -4px 14px rgba(15,23,42,.06)}
+.nav button{position:relative;border:none;background:none;padding:8px 0 7px;color:var(--muted);font-size:12px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;border-radius:12px;min-width:0}
+.nav button span{white-space:nowrap;line-height:1.2}
+.nav button svg{width:24px;height:24px;stroke:var(--muted);fill:none;stroke-width:1.9}
+.nav button.active{background:var(--blue-soft);color:var(--blue)}
+.nav button.active svg{stroke:var(--blue)}
+.nl-curto{display:none}
+.dot{position:absolute;top:3px;left:calc(50% + 7px);min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:var(--danger);color:#fff;font-style:normal;font-size:11px;font-weight:900;display:grid;place-items:center;box-shadow:0 0 0 2px var(--surface);animation:pulsa 2s ease-in-out infinite}
+.dot.inline{position:static;display:inline-grid;margin-left:.35rem;box-shadow:none;animation:none;vertical-align:middle}
+@keyframes pulsa{50%{transform:scale(1.12)}}
+
+/* ---------- abas do admin ---------- */
+.admin-tabs{display:flex;flex-wrap:wrap;gap:.25rem;background:var(--surface2);padding:.25rem;border-radius:12px;margin-bottom:.85rem}
+.admin-tabs button{flex:1 0 auto;border:0;background:none;padding:.55rem .8rem;border-radius:9px;font-weight:800;color:var(--muted);font-size:.85rem;white-space:nowrap}
+.admin-tabs button.active{background:var(--card);color:var(--blue-dark);box-shadow:var(--shadow-sm)}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+.stat{background:var(--surface2);border-radius:12px;padding:.7rem .8rem}
+.stat b{display:block;font-size:1.5rem;line-height:1.2;color:var(--blue-dark)}
+.stat small{font-size:.68rem;color:var(--muted);font-weight:800;letter-spacing:.03em}
+.stat-alerta{background:var(--danger-soft)}.stat-alerta b{color:var(--danger)}
+
+/* ---------- aparência ---------- */
+.theme-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem}
+.theme-opt{display:flex;align-items:center;gap:.55rem;padding:.65rem .75rem;border-radius:12px;border:2px solid var(--line);background:var(--surface2);font-weight:700;font-size:.875rem;text-align:left}
+.theme-opt.active{border-color:var(--blue);background:var(--blue-soft);color:var(--blue)}
+.theme-dot{width:1.1rem;height:1.1rem;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 2px rgba(0,0,0,.06) inset}
+
+/* ---------- avisos, janelas e carregando ---------- */
+footer{text-align:center;color:#8894A1;font-size:.8rem;padding:1.25rem 0 6rem;font-weight:700}
+.toast{position:fixed;left:50%;bottom:5.5rem;transform:translateX(-50%) translateY(12px);background:#18232E;color:#fff;padding:.7rem 1rem;border-radius:10px;font-size:.9rem;font-weight:700;opacity:0;pointer-events:none;transition:.2s;z-index:99;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:100;display:flex;align-items:center;justify-content:center;padding:1rem}
+.modal-box{background:var(--card);border-radius:var(--radius);padding:1.25rem;max-width:520px;width:100%;max-height:90vh;overflow:auto;box-shadow:var(--shadow)}
+.modal-txt{font-size:1rem;line-height:1.5;margin:0 0 .75rem}
+.termo p{font-size:.875rem;line-height:1.6;margin:0 0 .6rem}
+.loading-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.75rem;color:var(--muted);font-size:.95rem;font-weight:700}
+.admin-loading{min-height:12rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;color:var(--muted);font-size:.95rem;font-weight:700}
+.spinner{width:2rem;height:2rem;border:3px solid var(--line);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- telas maiores ---------- */
+@media (min-width:640px){
+  html{font-size:17px}
+  html.letra-grande{font-size:20px}
+  .topbar{padding:1.5rem 1.75rem 1.75rem}
+  .topbar h1{font-size:2.1rem}
+  main{padding:1.25rem 1.5rem 7rem}
+  .card{padding:1.35rem}
+  .btn-row>*{flex:0 1 auto}
+  .btn-row>.btn:not(.btn-sm){flex:1 1 0}
+}
+/* ---------- celular ---------- */
+@media (max-width:480px){
+  .filters{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .nav button{font-size:11.5px;letter-spacing:-.01em}
+  .nav button.tem-curto .nl{display:none}
+  .nav button.tem-curto .nl-curto{display:inline}
+}
+@media (max-width:360px){
+  .topbar h1{font-size:1.5rem}
+  .who{max-width:42%}
+}
 </style>
+
 </head>
 <body>
-<!--
-  Troca de Lotação — página oficial (GitHub Pages).
-  Ela abre o sistema do Google Apps Script dentro de um frame. Assim o endereço fica fixo e curto,
-  e não acontece o erro do "/u/1/" (quem tem mais de uma conta Google aberta no navegador
-  recebia erro de autorização ao abrir o link direto do Apps Script).
-  Se publicar uma implantação NOVA (outro ID), troque o endereço em APP abaixo.
-  Ao só criar "Nova versão" na mesma implantação, o endereço continua o mesmo: não precisa mexer aqui.
--->
-<div id="carregando"><div class="giro"></div><div>Abrindo a Troca de Lotação…</div><a id="direto" target="_top" rel="noopener">Não abriu? Toque aqui.</a></div>
-<iframe id="app" title="Troca de Lotação" allow="clipboard-write" referrerpolicy="no-referrer"></iframe>
+<div id="app"><div class="loading-screen"><div class="spinner"></div><div>Carregando…</div></div></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div id="modal" class="modal hidden" role="dialog" aria-modal="true"><div class="modal-box" id="modalBox"></div></div>
 <script>
-  var APP = 'https://script.google.com/macros/s/AKfycbwuVPSrlq49T7RpP8zT3LtdR2QMJt-rKEQfllwm8eeP8B1kipyasv209nQJ3ZVmIJEc/exec';
-  // repassa só o código de senha nova (?t=...) dos links enviados por e-mail
-  var t = (new URLSearchParams(location.search).get('t') || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 40);
-  var url = APP + (t ? '?t=' + t : '');
-  if (t) { try { history.replaceState(null, '', location.pathname); } catch (e) {} }
-  var f = document.getElementById('app'), c = document.getElementById('carregando'), d = document.getElementById('direto');
-  d.href = url;
-  f.onload = function () { c.className = 'some'; };
-  setTimeout(function () { d.style.display = 'block'; }, 12000);
-  f.src = url;
+'use strict';
+/* =========================================================
+   TROCA DE LOTAÇÃO v3 — página (módulo comum + módulo do servidor)
+   O módulo de administração fica em Painel.html.
+   ========================================================= */
+
+const ICONS = {
+  vagas:'<svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+  minha:'<svg viewBox="0 0 24 24"><path d="M12 2 2 8l10 6 10-6-10-6Z"/><path d="M2 8v8l10 6 10-6V8"/></svg>',
+  candidaturas:'<svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>',
+  perfil:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
+  admin:'<svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.5 9.5 8 11 4.5-1.5 8-6 8-11V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>'
+};
+const THEMES = [
+  {id:'claro',label:'Claro',dot:'#005BAA'},{id:'escuro',label:'Escuro',dot:'#0F172A'},
+  {id:'protecao',label:'Proteção visual',dot:'#8C6A3E'},{id:'verde',label:'Verde',dot:'#0E8A4B'}
+];
+const STATUS = {
+  pendente:['Aguardando resposta','badge-yellow'], aguardando_rh:['Aguardando aprovação do RH','badge-yellow'],
+  aceita:['Troca aceita','badge-green'], efetivada:['Troca efetivada','badge-green'],
+  recusada:['Recusada','badge-red'], cancelada:['Cancelada','']
+};
+const TERMO = `<p><b>Termo de uso dos dados (LGPD)</b></p>
+<p>Para participar da troca de lotação, o sistema guarda seu nome, e-mail, telefone, cargo, turno, bairro e equipamento de trabalho, e o motivo da troca quando você publica uma vaga.</p>
+<p><b>Para quê:</b> mostrar sua vaga para servidores do mesmo cargo e, quando uma troca for aceita, liberar o seu contato <b>apenas</b> para a outra pessoa da troca. Os administradores da Secretaria veem os dados para conferir cadastros e corrigir informações.</p>
+<p><b>Como:</b> nome, e-mail, telefone e motivo ficam criptografados. A senha nunca é guardada. Os registros de uso (logs) são apagados após 1 ano.</p>
+<p><b>Seus direitos:</b> você pode corrigir seus dados no Perfil a qualquer momento e pode apagar todos os seus dados em Perfil &gt; Apagar meus dados.</p>`;
+
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}
+function novoId(){const a=new Uint8Array(16);(window.crypto||{}).getRandomValues?crypto.getRandomValues(a):a.forEach((_,i)=>a[i]=Math.random()*256);return Array.from(a,b=>b.toString(16).padStart(2,'0')).join('')}
+
+const S = {
+  token: lsGet('tl_token'),
+  aparelho: lsGet('tl_aparelho') || novoId(),
+  theme: lsGet('tl_theme') || 'claro',
+  config: null, d: null, me: null, tab: 'vagas', adminTab: null, ch: {}
+};
+lsSet('tl_aparelho', S.aparelho);
+
+/* ---------- utilidades ---------- */
+function $(id){return document.getElementById(id)}
+function v(id){const e=$(id);return e?String(e.value||'').trim():''}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(window._toast);window._toast=setTimeout(()=>t.classList.remove('show'),3600)}
+function copyText(t){(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Copiado!')).catch(()=>toast('Selecione e copie manualmente.'))}
+function formatPhone(d){d=String(d||'').replace(/\D/g,'');if(d.length===11)return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;if(d.length===10)return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;return d||'—'}
+function whatsappLink(p){const d=String(p||'').replace(/\D/g,'');return d?'https://wa.me/'+(d.startsWith('55')?d:'55'+d):'#'}
+function dataBR(iso){const d=new Date(iso);return isNaN(d)?'':d.toLocaleDateString('pt-BR')}
+function opts(list,sel,first){return (first!=null?`<option value="">${esc(first)}</option>`:'')+list.map(x=>`<option value="${esc(x)}" ${x===sel?'selected':''}>${esc(x)}</option>`).join('')}
+function limpaErro(e){return String(e&&e.message||e||'Erro').replace(/^(Error|Exception|ScriptError):\s*/i,'')}
+function applyTheme(t){S.theme=t;document.body.setAttribute('data-theme',t==='claro'?'':t);lsSet('tl_theme',t)}
+function loading(msg){$('app').innerHTML=`<div class="loading-screen"><div class="spinner"></div><div>${esc(msg||'Carregando…')}</div></div>`}
+function pw(id,ph,auto){return `<div class="pw"><input id="${id}" type="password" autocomplete="${auto||'current-password'}" placeholder="${esc(ph||'')}"><button type="button" data-ver="${id}">Mostrar</button></div>`}
+function ligarOlhos(root){(root||document).querySelectorAll('[data-ver]').forEach(b=>b.onclick=()=>{const i=$(b.dataset.ver);i.type=i.type==='password'?'text':'password';b.textContent=i.type==='password'?'Mostrar':'Ocultar'})}
+function senhaDupla(a,b){const s1=$(a).value,s2=$(b).value;if(s1.length<8)throw new Error('A senha precisa ter pelo menos 8 caracteres.');if(s1!==s2)throw new Error('As duas senhas não são iguais.');return s1}
+function msgOk(id,t){const m=$(id);if(m){m.className='msg ok';m.textContent=t}}
+
+/* ---------- janela própria (confirm/prompt do navegador são bloqueados dentro de frames) ---------- */
+function janela(html){
+  return new Promise(ok=>{
+    const m=$('modal'),b=$('modalBox');b.innerHTML=html;m.classList.remove('hidden');
+    const fim=r=>{m.classList.add('hidden');b.innerHTML='';ok(r)};
+    b.querySelectorAll('[data-fim]').forEach(x=>x.onclick=()=>{const t=b.querySelector('textarea,input');fim(x.dataset.fim==='ok'?(t?t.value.trim():true):null)});
+    const t=b.querySelector('textarea,input');if(t)t.focus();
+  });
+}
+function confirmar(msg,sim,perigo){return janela(`<p class="modal-txt">${esc(msg)}</p><div class="btn-row mt"><button class="btn ${perigo?'btn-danger':'btn-primary'}" data-fim="ok">${esc(sim||'Confirmar')}</button><button class="btn btn-ghost" data-fim="nao">Voltar</button></div>`)}
+function perguntar(msg,ph,sim,obrigatorio){
+  return janela(`<p class="modal-txt">${esc(msg)}</p><textarea rows="3" maxlength="300" placeholder="${esc(ph||'')}"></textarea><div class="btn-row mt"><button class="btn btn-primary" data-fim="ok">${esc(sim||'Enviar')}</button><button class="btn btn-ghost" data-fim="nao">Voltar</button></div>`)
+    .then(r=>{if(r!=null&&obrigatorio&&!r){toast('Escreva o texto.');return null}return r});
+}
+function mostrarTermo(){return janela(`<div class="termo">${TERMO}</div><button class="btn btn-primary mt" data-fim="ok">Fechar</button>`)}
+
+/* ---------- servidor ---------- */
+function gas(name,...args){return new Promise((ok,no)=>google.script.run.withSuccessHandler(ok).withFailureHandler(no)[name](...args))}
+/** Funções públicas devolvem {ok,message}. Lança erro se !ok. */
+async function pub(name,...args){const r=await gas(name,...args);if(!r||!r.ok)throw new Error(r&&r.message||'Não foi possível concluir.');return r}
+/** Chamada com sessão. */
+async function call(acao,dados){
+  try{return await gas('api',S.token,acao,dados||{})}
+  catch(e){
+    const m=limpaErro(e);
+    if(/SESSAO/.test(m)){sairLocal();renderLogin('Sua sessão terminou. Entre novamente.');throw new Error('__tratado')}
+    if(/TROCAR_SENHA/.test(m)){renderTrocarForcada();throw new Error('__tratado')}
+    throw new Error(m);
+  }
+}
+
+/* indicador de erro: erros inesperados da página vão para os admins (no máximo 3 por visita) */
+let ERROS_ENVIADOS=0;
+function avisarErro(msg,onde){if(ERROS_ENVIADOS>=3)return;ERROS_ENVIADOS++;try{google.script.run.relatarErro(String(msg).slice(0,300),String(onde||'').slice(0,60),S.aparelho)}catch(e){}}
+window.addEventListener('error',e=>avisarErro((e.message||'erro')+' @'+(e.lineno||''),'janela'));
+window.addEventListener('unhandledrejection',e=>{const m=limpaErro(e.reason);if(m!=='__tratado')avisarErro(m,'promessa')});
+
+/** Liga um botão a uma ação: trava enquanto roda (evita clique duplo) e mostra o erro. */
+function acao(btn,fn,msgEl){
+  if(!btn)return;
+  btn.onclick=async()=>{
+    if(btn.disabled)return;
+    const txt=btn.innerHTML;btn.disabled=true;btn.innerHTML='Aguarde…';
+    const m=msgEl?$(msgEl):null;if(m){m.className='msg';m.textContent=''}
+    try{await fn()}
+    catch(e){const t=limpaErro(e);if(t!=='__tratado'){if(m){m.className='msg err';m.textContent=t}else toast(t)}}
+    finally{if(document.body.contains(btn)){btn.disabled=false;btn.innerHTML=txt}}
+  };
+}
+
+function entrarComToken(token){S.token=token;lsSet('tl_token',token);S.tab='vagas';return carregar()}
+function sairLocal(){S.token=null;S.d=null;S.me=null;lsSet('tl_token',null)}
+
+/* ---------- campos de lista (bairro, equipamento) com "Não encontrei" ---------- */
+const OUTRO='__outro';
+function campoLista(id,list,sel,primeiro,rotOutro,grupos){
+  const tem=!sel||list.some(x=>(x.nome||x)===sel);
+  let o=`<option value="">${esc(primeiro)}</option>`;
+  if(grupos){
+    const g={};list.forEach(x=>{(g[x.categoria||'Outros']=g[x.categoria||'Outros']||[]).push(x)});
+    o+=Object.keys(g).sort().map(k=>`<optgroup label="${esc(k)}">${g[k].map(x=>`<option value="${esc(x.nome)}" ${x.nome===sel?'selected':''}>${esc(x.nome)}${x.bairro?' — '+esc(x.bairro):''}</option>`).join('')}</optgroup>`).join('');
+  }else o+=list.map(x=>`<option value="${esc(x)}" ${x===sel?'selected':''}>${esc(x)}</option>`).join('');
+  o+=`<option value="${OUTRO}" ${!tem?'selected':''}>➕ ${esc(rotOutro)}</option>`;
+  return `<select id="${id}" data-outro="${id}O">${o}</select>
+    <div id="${id}OBox" class="${tem?'hidden':''} outro-box"><input id="${id}O" placeholder="Digite o nome" value="${tem?'':esc(sel)}" maxlength="80">
+    <div class="helper">O administrador recebe um aviso para incluir na lista. Até lá, seu cadastro fica com o nome que você digitou.</div></div>`;
+}
+function ligarListas(root){
+  (root||document).querySelectorAll('select[data-outro]').forEach(s=>{
+    const prev=s.onchange;
+    s.onchange=e=>{const box=$(s.dataset.outro+'Box');box.classList.toggle('hidden',s.value!==OUTRO);if(s.value===OUTRO)$(s.dataset.outro).focus();if(prev)prev(e)};
+  });
+}
+/** Campos de lotação (cargo, turno, equipamento, bairro). */
+function camposLotacao(p,u){
+  const c=S.config;u=u||{};
+  return `<div class="field"><label>Cargo</label><select id="${p}Cargo">${opts(c.cargos,u.cargo,'Selecione…')}</select></div>
+    <div class="field"><label>Turno</label><select id="${p}Turno">${opts(c.turnos,u.turno,'Selecione…')}</select></div>
+    <div class="field"><label>Equipamento onde trabalha</label>${campoLista(p+'Equip',c.equipamentos,u.equipamento,'Selecione…','Não encontrei o meu equipamento',true)}</div>
+    <div class="field"><label>Bairro do equipamento</label>${campoLista(p+'Bairro',c.bairros,u.bairro,'Selecione…','Não encontrei o meu bairro')}</div>`;
+}
+function ligarLotacao(p,root){
+  const eq=$(p+'Equip');
+  eq.onchange=()=>{const x=S.config.equipamentos.find(e=>e.nome===eq.value);const b=$(p+'Bairro');if(x&&x.bairro&&S.config.bairros.includes(x.bairro)){b.value=x.bairro;$(p+'BairroOBox').classList.add('hidden')}};
+  ligarListas(root);
+}
+function dadosLotacao(p){
+  const eq=v(p+'Equip'),b=v(p+'Bairro');
+  return {cargo:v(p+'Cargo'),turno:v(p+'Turno'),
+    equipamento:eq===OUTRO?'':eq,equipamentoOutro:eq===OUTRO?(v(p+'EquipO')||' '):'',
+    bairro:b===OUTRO?'':b,bairroOutro:b===OUTRO?(v(p+'BairroO')||' '):''};
+}
+
+/* ---------- escolha múltipla (bairros/equipamentos desejados) ---------- */
+function chips(id,list,sel,max,ph){S.ch[id]={list,sel:(sel||[]).slice(),max,ph};return `<div id="${id}"></div>`}
+function desenharChips(id){
+  const c=S.ch[id],el=$(id);
+  el.innerHTML=`<div class="chips">${c.sel.map((x,i)=>`<span class="chip">${esc(x)}<button type="button" data-rm="${i}" aria-label="Remover">×</button></span>`).join('')||'<span class="helper">Qualquer um</span>'}</div>
+    ${c.sel.length<c.max?`<select data-add>${opts(c.list.filter(x=>!c.sel.includes(x)),'',c.ph)}</select>`:`<div class="helper">Máximo de ${c.max}.</div>`}`;
+  el.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{c.sel.splice(Number(b.dataset.rm),1);desenharChips(id)});
+  const a=el.querySelector('[data-add]');if(a)a.onchange=()=>{if(a.value){c.sel.push(a.value);desenharChips(id)}};
+}
+
+/* ---------- início ---------- */
+async function init(){
+  applyTheme(S.theme);aplicarLetra(lsGet('tl_letra'));
+  lsSet('tl_code',null);lsSet('tl_session',null);
+  const P=window.PARAMS||{};
+  try{S.config=await gas('getPublicConfig')}catch(e){$('app').innerHTML=`<div class="center"><div class="card"><div class="msg err">Erro ao abrir: ${esc(limpaErro(e))}</div><button class="btn btn-ghost mt" onclick="location.reload()">Tentar de novo</button></div></div>`;return}
+  if(P.t){sairLocal();renderNovaSenha(P.t);return}
+  if(S.token)await carregar().catch(()=>{});else renderLogin();
+}
+
+async function carregar(){
+  if(!S.d)loading('Carregando seus dados…');
+  try{
+    const d=await call('estado');
+    S.d=d;S.me=d.me;S.config=d.config;
+    if(!S.me.perfilCompleto&&['vagas','minha','candidaturas'].includes(S.tab))S.tab=S.me.nivel>=2?'admin':'perfil';
+    renderApp();
+  }catch(e){
+    const m=limpaErro(e);if(m==='__tratado')return;
+    $('app').innerHTML=`<div class="center"><div class="login-wrap"><div class="card"><div class="msg err">Erro no carregamento: ${esc(m)}</div><button class="btn btn-ghost mt" id="tentar">Tentar de novo</button></div></div></div>`;
+    $('tentar').onclick=()=>{S.d=null;carregar()};
+  }
+}
+
+/* ---------- telas de acesso ---------- */
+function tela(icone,pequeno,titulo,corpo){
+  $('app').innerHTML=`<div class="center"><div class="login-wrap">
+    <div class="brand"><div class="brand-icon">${icone}</div><div><small>${esc(pequeno)}</small><h1>${esc(titulo)}</h1></div></div>
+    ${corpo}<footer>Secretaria de Desenvolvimento Social · Uberlândia</footer></div></div>`;
+  ligarOlhos();
+}
+
+function renderLogin(erro){
+  tela('⇄','Secretaria de Desenvolvimento Social','Troca de Lotação',`
+    <div class="privacy-note"><div class="pn-icon">🔒</div><div>
+      <p><b>Seu contato fica oculto.</b> Telefone e e-mail só aparecem para a pessoa com quem você fechar a troca.</p>
+      <p>Nome, e-mail, telefone e motivo ficam guardados de forma criptografada.</p></div></div>
+    <div class="card">
+      <div class="field"><label>E-mail</label><input id="lEmail" type="email" autocomplete="username" placeholder="seuemail@exemplo.com"></div>
+      <div class="field"><label>Senha</label>${pw('lSenha','Sua senha')}</div>
+      <button class="btn btn-primary" id="lBtn">Entrar</button>
+      <div id="lMsg" class="msg err">${esc(erro||'')}</div>
+      <button class="btn btn-yellow mt" id="lCad">Criar cadastro</button>
+      <div class="links-acesso"><button class="linkbtn" id="lEsq">Esqueci minha senha</button><button class="linkbtn" id="lAju">Não tenho acesso ao meu e-mail</button></div>
+    </div>`);
+  acao($('lBtn'),async()=>{const r=await pub('entrar',v('lEmail'),$('lSenha').value,S.aparelho);await entrarComToken(r.token)},'lMsg');
+  $('lSenha').onkeydown=e=>{if(e.key==='Enter')$('lBtn').click()};
+  $('lCad').onclick=()=>renderCadastro();
+  $('lEsq').onclick=()=>renderEsqueci(v('lEmail'));
+  $('lAju').onclick=()=>renderAjuda();
+  $('lEmail').focus();
+}
+
+function renderCadastro(){
+  const c=S.config;
+  tela('+','Novo por aqui?','Criar meu cadastro',`
+    <div class="card">
+      <p class="helper">Preencha seus dados. Vamos mandar um código para confirmar seu e-mail.${c.aprovarCadastro?' Depois, um administrador confere e libera o seu acesso.':''}</p>
+      <div class="field"><label>Nome completo</label><input id="sNome" autocomplete="name" maxlength="80"></div>
+      <div class="field"><label>E-mail</label><input id="sEmail" type="email" autocomplete="email"></div>
+      <div class="field"><label>Telefone (WhatsApp)</label><input id="sTel" inputmode="tel" placeholder="(34) 9 9999-9999"></div>
+      ${camposLotacao('s')}
+      <div class="field"><label>Crie uma senha (mínimo 8)</label>${pw('sS1','','new-password')}</div>
+      <div class="field"><label>Repita a senha</label>${pw('sS2','','new-password')}</div>
+      <label class="check"><input type="checkbox" id="sAceite"> <span>Li e aceito o <button type="button" class="linkbtn inline" id="sTermo">termo de uso dos dados (LGPD)</button>.</span></label>
+      <button class="btn btn-primary mt" id="sBtn">Criar cadastro</button>
+      <button class="btn btn-ghost mt" id="sVoltar">Voltar</button>
+      <div id="sMsg" class="msg"></div>
+    </div>`);
+  ligarLotacao('s',$('app'));
+  $('sTermo').onclick=mostrarTermo;
+  $('sVoltar').onclick=()=>renderLogin();
+  acao($('sBtn'),async()=>{
+    const senha=senhaDupla('sS1','sS2');
+    if(!$('sAceite').checked)throw new Error('Para continuar, leia e aceite o termo de uso dos dados.');
+    const r=await pub('cadastrar',Object.assign({nome:v('sNome'),email:v('sEmail'),telefone:v('sTel'),senha,aceite:true,aparelho:S.aparelho},dadosLotacao('s')));
+    if(!r.verificar){msgOk('sMsg',r.message);return}
+    renderConfirmar(r.email);
+  },'sMsg');
+}
+
+function renderConfirmar(email){
+  tela('✓','Confirmação','Confirme seu e-mail',`
+    <div class="card">
+      <p class="helper">Enviamos um código de 6 números para <b>${esc(email)}</b>. Veja também a caixa de spam.</p>
+      <div class="field"><label>Código de confirmação</label><input id="cfTok" class="code" maxlength="6" inputmode="numeric" autocomplete="one-time-code"></div>
+      <button class="btn btn-primary" id="cfBtn">Confirmar</button>
+      <div id="cfMsg" class="msg"></div>
+    </div>`);
+  acao($('cfBtn'),async()=>{
+    const r=await pub('confirmarCadastro',email,v('cfTok'),S.aparelho);
+    if(r.aguardando){renderAviso('⏳','Quase lá','Cadastro em análise',r.message);return}
+    toast('Cadastro concluído!');await entrarComToken(r.token);
+  },'cfMsg');
+  $('cfTok').focus();
+}
+
+function renderAviso(icone,peq,titulo,texto){
+  tela(icone,peq,titulo,`<div class="card"><p class="helper">${esc(texto)}</p><button class="btn btn-primary mt" id="avOk">Voltar ao início</button></div>`);
+  $('avOk').onclick=()=>renderLogin();
+}
+
+function renderEsqueci(email){
+  tela('?','Recuperar acesso','Esqueci minha senha',`
+    <div class="card">
+      <div class="field"><label>E-mail cadastrado</label><input id="eEmail" type="email" autocomplete="username" value="${esc(email||'')}"></div>
+      <button class="btn btn-primary" id="eBtn">Enviar código por e-mail</button>
+      <div id="eMsg" class="msg"></div>
+      <button class="btn btn-ghost mt" id="eTenho">Já tenho o código</button>
+    </div>
+    <div class="info-box">Não consegue mais abrir esse e-mail? <button class="linkbtn inline" id="eAju">Peça ajuda a um administrador</button>.</div>
+    <button class="btn btn-ghost mt" id="eVoltar">Voltar</button>`);
+  $('eVoltar').onclick=()=>renderLogin();
+  $('eTenho').onclick=()=>renderNovaSenha('');
+  $('eAju').onclick=()=>renderAjuda();
+  acao($('eBtn'),async()=>{const r=await pub('pedirReset',v('eEmail'));msgOk('eMsg',r.message);setTimeout(()=>renderNovaSenha(''),1800)},'eMsg');
+}
+
+function renderNovaSenha(token){
+  tela('🔑','Recuperar acesso','Criar senha nova',`
+    <div class="card">
+      <div class="field"><label>Código recebido por e-mail</label><input id="nTok" class="code" maxlength="10" autocomplete="one-time-code" value="${esc(token||'')}"></div>
+      <div class="field"><label>Nova senha (mínimo 8)</label>${pw('nS1','','new-password')}</div>
+      <div class="field"><label>Repita a senha</label>${pw('nS2','','new-password')}</div>
+      <button class="btn btn-primary" id="nBtn">Salvar senha e entrar</button>
+      <div id="nMsg" class="msg"></div>
+    </div>
+    <button class="btn btn-ghost" id="nVoltar">Voltar</button>`);
+  $('nVoltar').onclick=()=>renderLogin();
+  acao($('nBtn'),async()=>{
+    const s=senhaDupla('nS1','nS2');
+    const r=await pub('redefinirSenha',v('nTok'),s,S.aparelho);
+    if(r.aguardando){renderAviso('⏳','Senha criada','Cadastro em análise',r.message);return}
+    toast('Senha salva!');await entrarComToken(r.token);
+  },'nMsg');
+  (token?$('nS1'):$('nTok')).focus();
+}
+
+function renderAjuda(){
+  tela('🆘','Recuperar acesso','Perdi o acesso ao meu e-mail',`
+    <div class="card">
+      <p class="helper">Um administrador vai conferir seus dados (pode ligar no telefone cadastrado), trocar o e-mail da sua conta e mandar um link para você criar uma senha nova.</p>
+      <div class="field"><label>Nome completo</label><input id="aNome" maxlength="80"></div>
+      <div class="field"><label>Telefone cadastrado</label><input id="aTel" inputmode="tel"></div>
+      <div class="field"><label>E-mail novo (que você consegue abrir)</label><input id="aEmail" type="email"></div>
+      <div class="field"><label>Mensagem (opcional)</label><textarea id="aMsg2" rows="3" maxlength="400" placeholder="Ex.: trabalho no CRAS Tibery, meu e-mail antigo era da prefeitura"></textarea></div>
+      <button class="btn btn-primary" id="aBtn">Enviar pedido</button>
+      <div id="aMsg" class="msg"></div>
+    </div>
+    <button class="btn btn-ghost" id="aVoltar">Voltar</button>`);
+  $('aVoltar').onclick=()=>renderLogin();
+  acao($('aBtn'),async()=>{const r=await pub('pedirAjudaAcesso',{nome:v('aNome'),telefone:v('aTel'),emailNovo:v('aEmail'),mensagem:v('aMsg2'),aparelho:S.aparelho});renderAviso('✓','Pedido enviado','Aguarde o administrador',r.message)},'aMsg');
+}
+
+function renderTrocarForcada(){
+  tela('🔑','Senha temporária','Crie sua senha',`
+    <div class="card">
+      <p class="helper">Você entrou com uma senha temporária. Crie agora a sua senha pessoal.</p>
+      <div class="field"><label>Nova senha (mínimo 8)</label>${pw('tf1','','new-password')}</div>
+      <div class="field"><label>Repita a senha</label>${pw('tf2','','new-password')}</div>
+      <button class="btn btn-primary" id="tfBtn">Salvar e entrar</button>
+      <button class="btn btn-ghost mt" id="tfSair">Sair</button>
+      <div id="tfMsg" class="msg"></div>
+    </div>`);
+  acao($('tfBtn'),async()=>{const s=senhaDupla('tf1','tf2');await call('conta.senha',{nova:s});toast('Senha salva!');S.d=null;await carregar()},'tfMsg');
+  $('tfSair').onclick=logout;
+}
+
+async function logout(){try{if(S.token)await gas('api',S.token,'conta.sair',{})}catch(e){}sairLocal();renderLogin()}
+
+/* ---------- aplicativo ---------- */
+function renderApp(){
+  const me=S.me;
+  $('app').innerHTML=`
+  <div class="topbar"><div class="topbar-row"><div class="tb-titulo"><div class="eyebrow">Secretaria de Desenvolvimento Social</div><h1>Troca de Lotação</h1></div>
+    <div class="who"><b>${esc((me.nome||'').split(' ')[0])}</b><span>${esc(me.cargo||'')}</span>${me.nivel>1?`<br><span class="badge badge-yellow">${esc(me.papel)}</span>`:''}<br><button class="logout" id="logout">Sair</button></div></div></div>
+  <main id="main"></main><nav class="nav" id="nav"></nav>`;
+  $('logout').onclick=logout;
+  renderNav();renderTab();
+}
+
+function renderNav(){
+  const me=S.me,items=[];
+  if(me.perfilCompleto)items.push(['vagas','Vagas'],['minha','Minha vaga'],['candidaturas','Candidaturas','Inscrições']);
+  items.push(['perfil','Perfil']);
+  if(me.nivel>=2)items.push(['admin',me.nivel>=3?'Master':'Admin']);
+  const pend=S.d.pendencias?S.d.pendencias.total:0;
+  const aviso=(me.bairroRevisao||me.equipamentoRevisao)?1:0;
+  const nav=$('nav');nav.style.setProperty('--n',items.length);
+  nav.innerHTML=items.map(x=>{
+    const n=x[0]==='admin'?pend:x[0]==='perfil'?aviso:0;
+    return `<button class="${S.tab===x[0]?'active':''}${x[2]?' tem-curto':''}" data-tab="${x[0]}">${ICONS[x[0]]}<span class="nl">${x[1]}</span>${x[2]?`<span class="nl-curto">${x[2]}</span>`:''}${n?`<i class="dot" title="Pendências">${x[0]==='perfil'?'!':n}</i>`:''}</button>`;
+  }).join('');
+  nav.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;renderNav();renderTab();window.scrollTo(0,0)});
+}
+
+function renderTab(){
+  const m=$('main');
+  if(S.tab==='admin'&&S.me.nivel>=2)return renderAdmin(m);
+  if(!S.me.perfilCompleto||S.tab==='perfil')return renderPerfil(m);
+  if(S.tab==='minha')return renderMinha(m);
+  if(S.tab==='candidaturas')return renderCandidaturas(m);
+  return renderVagas(m);
+}
+
+async function atualizar(tab){if(tab)S.tab=tab;await carregar()}
+
+/* --- Vagas --- */
+function marcas(x){
+  if(x.perfeita)return '<span class="badge badge-star">⭐ Troca perfeita</span>';
+  return (x.procuraVoce?'<span class="badge badge-green">Procura o seu local</span>':'')+(x.combina?'<span class="badge badge-green">Combina com o que você procura</span>':'');
+}
+function desejoTxt(x){
+  const l=[].concat(x.desejoEquipamentos||[],x.desejoBairros||[]);
+  return `${esc(x.desejoTurno||'qualquer turno')} · ${esc(l.length?l.join(', '):'qualquer local')}`;
+}
+function renderVagas(m){
+  const d=S.d,lim=d.config.maxCandidaturas,cheio=d.pendentes>=lim;
+  const nPerf=d.vagas.filter(x=>x.perfeita).length;
+  m.innerHTML=`
+    <div class="section-title">Vagas para ${esc(S.me.cargo)}</div>
+    <div class="info-box" style="margin:0 0 .85rem">Você tem <b>${d.pendentes}</b> de <b>${lim}</b> candidaturas aguardando resposta.${cheio?' Para enviar outra, aguarde uma resposta ou desista de alguma.':''}</div>
+    ${!d.minhaVaga?'<div class="warn-box">Dica: publique a sua vaga em <b>Minha vaga</b> dizendo para onde quer ir. Assim o sistema mostra as <b>trocas perfeitas</b> (quando os dois querem o local um do outro).</div>':nPerf?`<div class="ok-box">⭐ ${nPerf} troca(s) perfeita(s) para você aparecem primeiro.</div>`:''}
+    <div class="filters">
+      <select id="fBairro">${opts(d.config.bairros,'','Todos os bairros')}</select>
+      <select id="fTurno">${opts(d.config.turnos,'','Todos os turnos')}</select>
+    </div>
+    <label class="check"><input type="checkbox" id="fComb"> <span>Mostrar só as que combinam comigo</span></label>
+    <div id="vagaList" class="mt"></div>`;
+  const draw=()=>{
+    const b=v('fBairro'),t=v('fTurno'),so=$('fComb').checked;
+    const list=d.vagas.filter(x=>(!b||x.bairro===b)&&(!t||x.turno===t)&&(!so||x.perfeita||x.combina||x.procuraVoce));
+    const el=$('vagaList');
+    if(!list.length){el.innerHTML='<div class="empty"><h3>Nenhuma vaga encontrada</h3><p>Quando alguém do seu cargo disponibilizar a lotação para troca, ela aparece aqui.</p></div>';return}
+    el.innerHTML=list.map(x=>{
+      const st=x.minhaCandidatura;
+      const rot=st?(STATUS[st]||[st])[0]:cheio?'Limite de candidaturas atingido':'Quero essa vaga';
+      return `<div class="card vaga ${x.perfeita?'perfeita':''}"><div class="badges">${marcas(x)}</div><h3>${esc(x.equipamento)}</h3><div class="meta">${esc(x.bairro)} · publicada em ${esc(dataBR(x.createdAt))}</div>
+        <div class="badges"><span class="badge">${esc(x.turno)}</span><span class="badge badge-yellow">${esc(x.cargo)}</span></div>
+        <div class="helper"><b>Procura:</b> ${desejoTxt(x)}</div>
+        ${x.motivo?`<div class="info-box"><b>Motivo da troca:</b><br>${esc(x.motivo)}</div>`:''}
+        <button class="btn ${st||cheio?'btn-ghost':'btn-primary'} btn-sm mt" style="width:100%" ${st||cheio?'disabled':''} data-vaga="${esc(x.id)}">${esc(rot)}</button></div>`;
+    }).join('');
+    el.querySelectorAll('[data-vaga]').forEach(b=>acao(b,async()=>{const r=await call('cand.enviar',{vagaId:b.dataset.vaga});toast(r.message);await atualizar()}));
+  };
+  $('fBairro').onchange=draw;$('fTurno').onchange=draw;$('fComb').onchange=draw;draw();
+}
+
+/* --- Minha vaga --- */
+function contatoHtml(c){
+  if(!c)return '';
+  return `<div class="contato-box"><b>Contato liberado:</b><br>${esc(c.nome)} · ${esc(formatPhone(c.telefone))}${c.email?' · '+esc(c.email):''}
+    <div class="mt"><a href="${whatsappLink(c.telefone)}" target="_blank" rel="noopener noreferrer" class="btn btn-ok btn-sm" style="text-decoration:none;display:inline-flex">💬 Abrir WhatsApp</a></div></div>`;
+}
+function botaoEfetivar(id){return `<div class="info-box">Quando a troca acontecer de fato (com a portaria/RH), toque abaixo: o sistema atualiza o bairro, o equipamento e o turno dos dois.</div><button class="btn btn-ok btn-sm mt" data-efetivar="${esc(id)}">✓ Troca efetivada</button>`}
+function ligarEfetivar(m){
+  m.querySelectorAll('[data-efetivar]').forEach(b=>acao(b,async()=>{
+    if(!await confirmar('Confirmar que a troca já aconteceu? Seu perfil e o da outra pessoa vão receber a nova lotação.','Sim, foi efetivada'))return;
+    const r=await call('cand.efetivar',{id:b.dataset.efetivar});toast(r.message);await atualizar('perfil');
+  }));
+}
+
+function renderMinha(m){
+  const u=S.me,d=S.d,c=d.config,mv=d.minhaVaga;
+  const viva=mv&&(mv.status==='aberta'||mv.status==='em_analise');
+  let h=`<div class="section-title">Sua lotação atual</div><div class="card"><h3>${esc(u.equipamento)}</h3><div class="meta">${esc(u.bairro)}</div>
+    <div class="badges"><span class="badge">${esc(u.turno)}</span><span class="badge">${esc(u.cargo)}</span></div></div>`;
+  if(mv){
+    h+=`<div class="card"><div class="section-title">${viva?'Sua vaga publicada':'Sua troca fechada'}</div>
+      ${mv.status==='em_analise'?'<div class="warn-box">Você aceitou uma troca e ela aguarda a aprovação da administração.</div>':''}
+      <p class="helper">Procurando: <b>${desejoTxt(mv)}</b></p>
+      ${mv.motivo?`<div class="info-box"><b>Motivo da troca:</b><br>${esc(mv.motivo)}</div>`:''}
+      ${mv.status==='aberta'&&mv.venceEm!=null?`<p class="helper mt">Vence em <b>${mv.venceEm} dia(s)</b> se nenhuma troca fechar.</p>
+        <div class="btn-row"><button class="btn btn-ghost btn-sm" id="renovar">Renovar vaga</button><button class="btn btn-danger btn-sm" id="cancelarVaga">Cancelar vaga</button></div>`:''}
+      ${mv.status==='em_analise'?'<button class="btn btn-danger btn-sm mt" id="cancelarVaga">Cancelar vaga</button>':''}
+      ${!viva?'<button class="btn btn-yellow btn-sm mt" id="novaVaga">Publicar nova vaga</button>':''}</div>
+      <div class="section-title">Candidaturas recebidas</div>`;
+    h+=!d.recebidas.length?'<div class="empty"><h3>Nenhuma candidatura ainda</h3><p>Quando alguém se interessar pela sua vaga, aparece aqui.</p></div>':
+      d.recebidas.map(x=>{const st=STATUS[x.status]||[x.status,''];return `<div class="card"><h3>${esc(x.nome)}</h3><div class="meta">${esc(x.cargo)} · ${esc(x.equipamento)} · ${esc(x.bairro)}</div>
+        <div class="badges"><span class="badge">${esc(x.turno)}</span><span class="badge ${st[1]}">${esc(st[0])}</span>${x.perfeita?'<span class="badge badge-star">⭐ Tem o que você procura</span>':''}</div>
+        ${x.status==='pendente'&&mv.status==='aberta'?`<div class="btn-row mt"><button class="btn btn-ok btn-sm" data-aceitar="${esc(x.id)}">Aceitar</button><button class="btn btn-danger btn-sm" data-recusar="${esc(x.id)}">Recusar</button></div>`:''}
+        ${x.status==='aceita'||x.status==='efetivada'?contatoHtml(x.contato):''}
+        ${x.status==='aceita'?botaoEfetivar(x.id):''}
+        ${x.status==='efetivada'?`<p class="helper mt">Efetivada em ${esc(dataBR(x.efetivadoEm))}. Confira sua nova lotação no Perfil.</p>`:''}</div>`}).join('');
+  }
+  if(!viva&&(!mv||S._novaVaga)){
+    h+=`<div class="card" id="pubCard"><div class="section-title">Disponibilizar para troca</div>
+      <p class="helper">Servidores do mesmo cargo vão ver sua vaga e poderão se candidatar. Você decide quem aceitar. Diga para onde quer ir: o sistema destaca as trocas perfeitas.</p>
+      <div class="field"><label>Equipamentos desejados (até 5)</label>${chips('dEquips',c.equipamentos.map(e=>e.nome),[],5,'Adicionar equipamento…')}</div>
+      <div class="field"><label>Bairros desejados (até 5)</label>${chips('dBairros',c.bairros,[],5,'Adicionar bairro…')}</div>
+      <div class="field"><label>Turno desejado</label><select id="dTurno">${opts(c.turnos,'','Qualquer turno')}</select></div>
+      <div class="field"><label>Motivo da troca</label><textarea id="dMotivo" rows="4" maxlength="600" placeholder="Ex.: ficar mais perto de casa, conciliar com estudo…"></textarea></div>
+      <p class="helper">A vaga fica aberta por ${c.vagaDias} dias (dá para renovar).</p>
+      <button class="btn btn-yellow" id="publicar">Publicar minha vaga</button><div id="mvMsg" class="msg"></div></div>`;
+  }
+  m.innerHTML=h;
+  if($('dEquips')){desenharChips('dEquips');desenharChips('dBairros')}
+  if($('cancelarVaga'))acao($('cancelarVaga'),async()=>{if(!await confirmar('Cancelar sua vaga publicada? Quem estava aguardando será avisado.','Cancelar vaga',true))return;const r=await call('vaga.cancelar',{id:mv.id});toast(r.message);await atualizar()});
+  if($('renovar'))acao($('renovar'),async()=>{const r=await call('vaga.renovar',{id:mv.id});toast(r.message);await atualizar()});
+  if($('novaVaga'))$('novaVaga').onclick=()=>{S._novaVaga=true;renderMinha(m);$('pubCard').scrollIntoView({behavior:'smooth'})};
+  m.querySelectorAll('[data-aceitar]').forEach(b=>acao(b,async()=>{
+    if(!await confirmar('Aceitar esta troca? A vaga será fechada, as outras candidaturas dela serão recusadas e as candidaturas de vocês dois em outras vagas serão canceladas.'+(c.aprovarTroca?' A troca ainda passa pela aprovação da administração.':''),'Aceitar troca'))return;
+    const r=await call('cand.decidir',{id:b.dataset.aceitar,decisao:'aceita'});toast(r.message);await atualizar()}));
+  m.querySelectorAll('[data-recusar]').forEach(b=>acao(b,async()=>{if(!await confirmar('Recusar esta candidatura?','Recusar',true))return;const r=await call('cand.decidir',{id:b.dataset.recusar,decisao:'recusada'});toast(r.message);await atualizar()}));
+  ligarEfetivar(m);
+  if($('publicar'))acao($('publicar'),async()=>{
+    const r=await call('vaga.publicar',{desejoEquipamentos:S.ch.dEquips.sel,desejoBairros:S.ch.dBairros.sel,desejoTurno:v('dTurno'),motivo:v('dMotivo')});
+    S._novaVaga=false;toast(r.message);await atualizar();
+  },'mvMsg');
+}
+
+/* --- Candidaturas --- */
+function renderCandidaturas(m){
+  const list=S.d.candidaturas;
+  if(!list.length){m.innerHTML='<div class="empty"><h3>Você ainda não se candidatou</h3><p>Encontre uma vaga na aba Vagas.</p></div>';return}
+  m.innerHTML='<div class="section-title">Minhas candidaturas</div>'+list.map(c=>{
+    const st=STATUS[c.status]||[c.status,''];
+    return `<div class="card"><div class="topbar-row"><div><h3>${esc(c.vaga.equipamento||'Vaga')}</h3><div class="meta">${esc(c.vaga.bairro)} · ${esc(c.vaga.turno)} · enviada em ${esc(dataBR(c.createdAt))}</div></div>
+      <span class="badge ${st[1]}">${esc(st[0])}</span></div>
+      ${c.obs&&['aceita','efetivada'].indexOf(c.status)<0?`<div class="helper mt">${esc(c.obs)}</div>`:''}
+      ${c.status==='aceita'||c.status==='efetivada'?contatoHtml(c.contato):''}
+      ${c.status==='aceita'?botaoEfetivar(c.id):''}
+      ${c.status==='pendente'||c.status==='aguardando_rh'?`<button class="btn btn-ghost btn-sm mt" data-desistir="${esc(c.id)}">Desistir desta candidatura</button>`:''}</div>`;
+  }).join('');
+  m.querySelectorAll('[data-desistir]').forEach(b=>acao(b,async()=>{if(!await confirmar('Desistir desta candidatura?','Desistir',true))return;const r=await call('cand.desistir',{id:b.dataset.desistir});toast(r.message);await atualizar()}));
+  ligarEfetivar(m);
+}
+
+/* --- Perfil --- */
+/* escolha de tema: usada no Perfil e no Resumo do Master */
+function temasHtml(){
+  return `<div class="section-title">Aparência</div><div class="card"><div class="theme-grid">
+    ${THEMES.map(t=>`<button class="theme-opt ${S.theme===t.id?'active':''}" data-theme-opt="${t.id}"><span class="theme-dot" style="background:${t.dot}"></span>${esc(t.label)}</button>`).join('')}
+  </div>
+  <label class="check mt"><input type="checkbox" id="letraGrande" ${lsGet('tl_letra')==='grande'?'checked':''}> <span>Letra maior</span></label></div>`;
+}
+function ligarTemas(m){
+  m.querySelectorAll('[data-theme-opt]').forEach(b=>b.onclick=()=>{applyTheme(b.dataset.themeOpt);m.querySelectorAll('[data-theme-opt]').forEach(x=>x.classList.toggle('active',x===b))});
+  const lg=m.querySelector('#letraGrande');if(lg)lg.onchange=()=>aplicarLetra(lg.checked?'grande':'');
+}
+function aplicarLetra(v){document.documentElement.classList.toggle('letra-grande',v==='grande');lsSet('tl_letra',v||'')}
+const ROT_ALERTA={BAIRRO:'Bairro',EQUIPAMENTO:'Equipamento',PROBLEMA:'Problema relatado',ACESSO:'Acesso'};
+function renderPerfil(m){
+  const u=S.me,lot=u.nivel===1||u.perfilCompleto;
+  const al=S.d.meusAlertas||[];
+  m.innerHTML=`${!u.perfilCompleto?`<div class="warn-box">${u.nivel>=2?'Você usa a parte de administração. Se também for servidor(a) e quiser trocar de lotação, preencha cargo, turno, equipamento e bairro.':'Complete seu perfil para ver as vagas.'}</div>`:''}
+  ${u.bairroRevisao||u.equipamentoRevisao?`<div class="alert-box">⚠ ${u.equipamentoRevisao?'Seu equipamento':'Seu bairro'}${u.bairroRevisao&&u.equipamentoRevisao?' e seu bairro ainda não estão':' ainda não está'} na lista oficial. Os administradores já foram avisados e vão incluir ou corrigir.</div>`:''}
+  <div class="section-title">Meu perfil</div><div class="card">
+    <div class="field"><label>Nome</label><input id="pNome" value="${esc(u.nome)}" maxlength="80"></div>
+    <div class="field"><label>E-mail (usado para entrar)</label><input id="pEmail" type="email" value="${esc(u.email)}"></div>
+    <div class="field"><label>Telefone</label><input id="pTel" inputmode="tel" value="${esc(u.telefone?formatPhone(u.telefone):'')}"></div>
+    ${camposLotacao('p',u)}
+    ${!lot?'<p class="helper">Cargo, turno, equipamento e bairro são opcionais para administradores.</p>':''}
+    <button class="btn btn-primary" id="saveP">Salvar alterações</button><div id="pm" class="msg"></div>
+    <div id="emailBox" class="hidden senha-box"><div class="field"><label>Código enviado ao novo e-mail</label><input id="pTok" class="code" maxlength="6" inputmode="numeric"></div>
+      <button class="btn btn-primary btn-sm" id="pTokBtn">Confirmar novo e-mail</button><div id="pTokMsg" class="msg"></div></div>
+  </div>
+  ${al.length?`<div class="section-title">Meus avisos aos administradores</div><div class="card">${al.map(a=>`<div class="person"><div class="person-title">${esc(ROT_ALERTA[a.tipo]||a.tipo)}: ${esc(a.texto)}</div>
+    <div class="person-sub">${esc(dataBR(a.createdAt))} · <span class="badge ${a.status==='aberto'?'badge-yellow':a.status==='resolvido'?'badge-green':'badge-red'}">${a.status==='aberto'?'Em análise':a.status==='resolvido'?'Resolvido':'Respondido'}</span></div>
+    ${a.resposta?`<div class="person-sub">Resposta: ${esc(a.resposta)}</div>`:''}</div>`).join('')}</div>`:''}
+  <div class="section-title">Senha</div><div class="card">
+    <div class="field"><label>Senha atual</label>${pw('sA','','current-password')}</div>
+    <div class="field"><label>Nova senha (mínimo 8)</label>${pw('sN1','','new-password')}</div>
+    <div class="field"><label>Repita a nova senha</label>${pw('sN2','','new-password')}</div>
+    <button class="btn btn-primary" id="sBtn">Trocar senha</button><div id="sMsg" class="msg"></div>
+    <button class="btn btn-ghost mt" id="sairTodos">Sair de todos os aparelhos</button>
+  </div>
+  <div class="section-title">Ajuda</div><div class="card">
+    <p class="helper">Algo deu errado ou está estranho? Conte para os administradores.</p>
+    <button class="btn btn-ghost" id="relatar">Relatar um problema</button>
+  </div>
+  ${temasHtml()}
+  <div class="section-title">Privacidade (LGPD)</div><div class="card">
+    <p class="helper">Seus dados pessoais ficam criptografados e o contato só é liberado para a pessoa da troca.</p>
+    <button class="btn btn-ghost" id="verTermo">Ler o termo de uso dos dados</button>
+    ${u.nivel<3?'<button class="btn btn-danger mt" id="apagar">Apagar meus dados</button>':''}
+  </div>`;
+  ligarOlhos(m);ligarLotacao('p',m);
+  ligarTemas(m);
+  acao($('saveP'),async()=>{
+    const r=await call('perfil.salvar',Object.assign({nome:v('pNome'),email:v('pEmail'),telefone:v('pTel')},dadosLotacao('p')));
+    if(r.confirmarEmail){msgOk('pm',r.message);$('emailBox').classList.remove('hidden');$('pTok').focus();return}
+    toast(r.message);await atualizar('perfil');
+  },'pm');
+  acao($('pTokBtn'),async()=>{const r=await call('perfil.confirmarEmail',{token:v('pTok')});toast(r.message);await atualizar('perfil')},'pTokMsg');
+  acao($('sBtn'),async()=>{const s=senhaDupla('sN1','sN2');const r=await call('conta.senha',{atual:$('sA').value,nova:s});msgOk('sMsg',r.message);['sA','sN1','sN2'].forEach(i=>$(i).value='')},'sMsg');
+  acao($('sairTodos'),async()=>{if(!await confirmar('Sair de todos os aparelhos, inclusive este?','Sair de todos'))return;await call('conta.sairTodos',{});sairLocal();renderLogin('Você saiu de todos os aparelhos.')});
+  acao($('relatar'),async()=>{const t=await perguntar('O que aconteceu? Diga em que tela estava e o que tentou fazer.','Descreva o problema','Enviar aos administradores',true);if(!t)return;const r=await call('alerta.enviar',{tipo:'PROBLEMA',texto:t});toast(r.message);await atualizar('perfil')});
+  $('verTermo').onclick=mostrarTermo;
+  if($('apagar'))$('apagar').onclick=renderApagar;
+}
+
+function renderApagar(){
+  const m=$('main');
+  m.innerHTML=`<div class="section-title">Apagar meus dados</div><div class="card">
+    <div class="alert-box">Isto apaga seu nome, e-mail, telefone e lotação, encerra sua vaga e cancela suas candidaturas. <b>Não dá para desfazer.</b> Para usar o sistema de novo, será preciso fazer outro cadastro.</div>
+    <div class="field mt"><label>Sua senha</label>${pw('xS','','current-password')}</div>
+    <div class="field"><label>Digite APAGAR para confirmar</label><input id="xC" autocomplete="off"></div>
+    <button class="btn btn-danger" id="xBtn">Apagar meus dados</button>
+    <button class="btn btn-ghost mt" id="xVoltar">Voltar</button><div id="xMsg" class="msg"></div></div>`;
+  ligarOlhos(m);
+  $('xVoltar').onclick=()=>renderPerfil(m);
+  acao($('xBtn'),async()=>{const r=await call('conta.apagar',{senha:$('xS').value,confirmacao:v('xC')});sairLocal();renderAviso('✓','LGPD','Dados apagados',r.message)},'xMsg');
+}
 </script>
+
+<script>
+'use strict';
+/* =========================================================
+   MÓDULO DE ADMINISTRAÇÃO
+   Admin (nível 2): Pendências · Pessoas · Listas
+   Master (nível 3): Resumo e regras · Pendências · Pessoas · Listas · Administradores · Logs
+   As permissões são conferidas no servidor; aqui só escondemos o que não se aplica.
+   ========================================================= */
+
+async function renderAdmin(m){
+  if(!S.adm)m.innerHTML='<div class="admin-loading"><div class="spinner"></div><div>Carregando…</div></div>';
+  let d;
+  try{d=await call('adm.painel')}catch(e){const t=limpaErro(e);if(t!=='__tratado')m.innerHTML=`<div class="empty">${esc(t)}</div>`;return}
+  S.adm=d;
+  if(S.d)S.d.pendencias=d.pendencias;
+  renderNav();
+  const abas=[['pend','Pendências'],['pessoas','Pessoas'],['listas','Listas']];
+  if(d.nivel>=3)abas.unshift(['resumo','Resumo']),abas.push(['admins','Administradores'],['logs','Logs']);
+  else if(d.podeCriarAdmin)abas.push(['admins','Administradores']);
+  if(!abas.some(a=>a[0]===S.adminTab))S.adminTab=d.pendencias.total?'pend':abas[0][0];
+  m.innerHTML=`<div class="admin-tabs">${abas.map(a=>`<button class="${S.adminTab===a[0]?'active':''}" data-at="${a[0]}">${a[1]}${a[0]==='pend'&&d.pendencias.total?` <i class="dot inline">${d.pendencias.total}</i>`:''}</button>`).join('')}</div><div id="adminBox"></div>`;
+  m.querySelectorAll('[data-at]').forEach(b=>b.onclick=()=>{S.adminTab=b.dataset.at;m.querySelectorAll('[data-at]').forEach(x=>x.classList.toggle('active',x===b));desenharAdmin()});
+  desenharAdmin();
+}
+
+function desenharAdmin(){
+  const box=$('adminBox'),d=S.adm;
+  ({resumo:admResumo,pend:admPendencias,pessoas:admPessoas,listas:admListas,admins:admAdmins,logs:admLogs}[S.adminTab]||admPendencias)(box,d);
+}
+
+async function recarregarAdmin(){
+  // listas e pendências mudam a configuração pública: recarrega tudo
+  try{const e=await call('estado');S.d=e;S.me=e.me;S.config=e.config}catch(x){}
+  return renderAdmin($('main'));
+}
+
+function pessoaLinha(p){return p?`${esc(p.nome||'—')} · ${esc(p.cargo||'sem cargo')} · ${esc(p.equipamento||'')} ${p.bairro?'· '+esc(p.bairro):''}`:'—'}
+
+/* --- Resumo e regras (master) --- */
+function admResumo(box,d){
+  const s=d.stats,r=d.regras;
+  box.innerHTML=`<div class="card"><div class="section-title">Visão geral · Administrador Geral</div><div class="stat-grid">
+    <div class="stat"><b>${s.usuarios}</b><small>SERVIDORES ATIVOS</small></div><div class="stat"><b>${s.aguardando}</b><small>AGUARDANDO APROVAÇÃO</small></div>
+    <div class="stat"><b>${s.vagasAbertas}</b><small>VAGAS ABERTAS</small></div><div class="stat"><b>${s.candidaturasPendentes}</b><small>CANDIDATURAS EM ABERTO</small></div>
+    <div class="stat"><b>${s.trocasAceitas}</b><small>TROCAS ACEITAS</small></div><div class="stat"><b>${s.trocasEfetivadas}</b><small>TROCAS EFETIVADAS</small></div>
+    <div class="stat"><b>${s.vagasVencidas}</b><small>VAGAS VENCIDAS</small></div><div class="stat"><b>${s.inativos}</b><small>DESATIVADOS</small></div>
+    <div class="stat ${d.pendencias.total?'stat-alerta':''}"><b>${d.pendencias.total}</b><small>PENDÊNCIAS</small></div></div></div>
+  <div class="card"><div class="section-title">E-mails</div><p class="helper">${d.email.count}/${d.email.limit} enviados hoje (${esc(d.email.date)}). Ao atingir o limite, os avisos param até o dia seguinte.</p></div>
+  <div class="card"><div class="section-title">Regras do sistema</div>
+    <div class="field"><label>Candidaturas em aberto por pessoa</label><input id="rMax" type="number" min="1" max="20" value="${r.maxCandidaturas}"></div>
+    <div class="field"><label>Dias até a vaga vencer (aviso 7 dias antes)</label><input id="rDias" type="number" min="15" max="365" value="${r.vagaDias}"></div>
+    <div class="field"><label>Limite de e-mails por dia</label><input id="rEmail" type="number" min="1" max="1500" value="${r.emailLimite}"></div>
+    <label class="check"><input type="checkbox" id="rCad" ${r.aprovarCadastro?'checked':''}> <span>Novos cadastros precisam da aprovação de um admin</span></label>
+    <label class="check"><input type="checkbox" id="rRH" ${r.aprovarTroca?'checked':''}> <span>Trocas aceitas precisam da aprovação da administração (RH) antes de valer</span></label>
+    <div class="field mt"><label>Endereço público do sistema (página do GitHub)</label><input id="rUrl" placeholder="https://seu-usuario.github.io/troca-lotacao/" value="${esc(r.urlPublica)}">
+      <div class="helper">Vai nos e-mails (links de senha nova). Em branco = endereço do Apps Script.</div></div>
+    <button class="btn btn-primary" id="rBtn">Salvar regras</button><div id="rMsg" class="msg"></div></div>
+  ${temasHtml()}`;
+  ligarTemas(box);
+  acao($('rBtn'),async()=>{const x=await call('master.regras',{maxCandidaturas:Number(v('rMax')),vagaDias:Number(v('rDias')),emailLimite:Number(v('rEmail')),
+    aprovarCadastro:$('rCad').checked,aprovarTroca:$('rRH').checked,urlPublica:v('rUrl')});toast(x.message);await recarregarAdmin()},'rMsg');
+}
+
+/* --- Pendências --- */
+function admPendencias(box,d){
+  const L=d.listas,eqs=L.EQUIPAMENTO.filter(x=>x.ativo),bas=L.BAIRRO.filter(x=>x.ativo).map(x=>x.nome);
+  const sec=(t,n,h)=>n?`<div class="section-title">${t} (${n})</div>${h}`:'';
+  const listas=d.alertas.filter(a=>a.tipo==='BAIRRO'||a.tipo==='EQUIPAMENTO');
+  const acesso=d.alertas.filter(a=>a.tipo==='ACESSO');
+  const probs=d.alertas.filter(a=>a.tipo==='PROBLEMA'||a.tipo==='ERRO');
+  const nada=!d.cadastros.length&&!d.alertas.length&&!d.trocasRH.length&&!d.trocasAceitas.length;
+  box.innerHTML=nada?'<div class="empty"><h3>Nenhuma pendência 🎉</h3><p>Quando alguém pedir um bairro ou equipamento novo, precisar de ajuda com o acesso ou relatar um erro, aparece aqui.</p></div>':
+  sec('Cadastros aguardando aprovação',d.cadastros.length,d.cadastros.map(p=>`<div class="card"><div class="person-title">${esc(p.nome)}</div>
+      <div class="person-sub">${esc(p.email)} · ${esc(formatPhone(p.telefone))} · cadastro em ${esc(dataBR(p.createdAt))}</div><div class="person-sub">${pessoaLinha(p)} · ${esc(p.turno)}</div>
+      <div class="btn-row mt"><button class="btn btn-ok btn-sm" data-cad-ok="${esc(p.id)}">Aprovar</button><button class="btn btn-danger btn-sm" data-cad-no="${esc(p.id)}">Recusar</button></div></div>`).join(''))+
+  sec('Incluir bairro ou equipamento',listas.length,listas.map(a=>{
+    const eq=a.tipo==='EQUIPAMENTO',sug=eq?eqs.map(x=>x.nome):bas;
+    return `<div class="card" data-al="${esc(a.id)}"><div class="badges"><span class="badge badge-red">${eq?'Equipamento':'Bairro'} fora da lista</span></div>
+      <div class="person-title">"${esc(a.texto)}"</div><div class="person-sub">Pedido por: ${pessoaLinha(a.autor)} · ${esc(dataBR(a.createdAt))}</div>
+      <div class="field mt"><label>Incluir na lista com o nome</label><input data-nome value="${esc(a.texto)}" maxlength="80"></div>
+      ${eq?`<div class="field"><label>Bairro do equipamento</label><select data-bairro>${opts(bas,a.autor&&bas.includes(a.autor.bairro)?a.autor.bairro:'','Selecione…')}</select></div>
+        <div class="field"><label>Tipo (CRAS, CREAS, Centro POP…)</label><input data-cat maxlength="40" value="${esc((a.texto.match(/^(CRAS|CREAS|NAICA|Centro POP|Centro Dia)/i)||[''])[0].toUpperCase().replace('CENTRO POP','Centro POP').replace('CENTRO DIA','Centro Dia'))}"></div>`:''}
+      <button class="btn btn-ok btn-sm" data-incluir>Incluir na lista</button>
+      <div class="field mt"><label>…ou já existe com outro nome?</label><select data-sug>${opts(sug,'','Escolha o certo…')}</select></div>
+      <div class="btn-row"><button class="btn btn-ghost btn-sm" data-corrigir>Corrigir para o escolhido</button><button class="btn btn-danger btn-sm" data-recusar>Recusar</button></div><div class="msg" data-msg></div></div>`;
+  }).join(''))+
+  sec('Ajuda com acesso (perdeu e-mail/senha)',acesso.length,acesso.map(a=>{const p=a.pedido||{},s=a.sugerido;return `<div class="card" data-al="${esc(a.id)}">
+      <div class="person-title">${esc(p.nome)}</div><div class="person-sub">Telefone informado: ${esc(formatPhone(p.telefone))} · E-mail novo: <b>${esc(p.emailNovo)}</b> · ${esc(dataBR(a.createdAt))}</div>
+      ${p.mensagem?`<div class="info-box">${esc(p.mensagem)}</div>`:''}
+      ${s?`<div class="${s.nome&&s.nome.split(' ')[0].toLowerCase()===String(p.nome||'').split(' ')[0].toLowerCase()?'ok-box':'warn-box'} mt">O telefone confere com o cadastro de <b>${esc(s.nome)}</b> (${esc(s.email)} · ${pessoaLinha(s)}). Confira antes (por exemplo, ligando para a pessoa).</div>
+        ${s.protegido?'<p class="helper">Este cadastro é de um administrador: só o Administrador Geral pode corrigir.</p>':`<div class="field mt"><label>Trocar o e-mail para</label><input data-email value="${esc(p.emailNovo)}"></div>
+        <button class="btn btn-ok btn-sm" data-acesso="${esc(s.id)}">Corrigir e-mail e mandar link de senha nova</button>`}`:
+        '<div class="warn-box mt">Nenhum cadastro com este telefone. Procure a pessoa em <b>Pessoas</b> (pelo nome) e corrija o e-mail por lá, ou recuse este pedido.</div>'}
+      <button class="btn btn-danger btn-sm mt" data-recusar>Recusar / encerrar</button><div class="msg" data-msg></div></div>`}).join(''))+
+  sec('Trocas aguardando aprovação',d.trocasRH.length,d.trocasRH.map(t=>`<div class="card"><div class="person-title">${esc(t.dono&&t.dono.nome)} ⇄ ${esc(t.candidato&&t.candidato.nome)}</div>
+      <div class="person-sub">${pessoaLinha(t.dono)} · ${esc(t.dono&&t.dono.turno)}</div><div class="person-sub">${pessoaLinha(t.candidato)} · ${esc(t.candidato&&t.candidato.turno)}</div>
+      <div class="person-sub">Aceita em ${esc(dataBR(t.decididoEm))}</div>
+      <div class="btn-row mt"><button class="btn btn-ok btn-sm" data-rh-ok="${esc(t.id)}">Aprovar troca</button><button class="btn btn-danger btn-sm" data-rh-no="${esc(t.id)}">Não aprovar</button></div></div>`).join(''))+
+  sec('Trocas aceitas, ainda não efetivadas',d.trocasAceitas.length,d.trocasAceitas.map(t=>`<div class="card"><div class="person-title">${esc(t.dono&&t.dono.nome)} ⇄ ${esc(t.candidato&&t.candidato.nome)}</div>
+      <div class="person-sub">${pessoaLinha(t.dono)}</div><div class="person-sub">${pessoaLinha(t.candidato)}</div>
+      <p class="helper">Quando a portaria sair, marque como efetivada: o sistema troca bairro, equipamento e turno dos dois.</p>
+      <button class="btn btn-ok btn-sm" data-efet="${esc(t.id)}">Marcar troca efetivada</button></div>`).join(''))+
+  sec('Problemas e erros',probs.length,probs.map(a=>`<div class="card" data-al="${esc(a.id)}"><div class="badges"><span class="badge badge-red">${a.tipo==='ERRO'?'Erro do sistema':'Problema relatado'}</span></div>
+      <div class="person-sub">${a.autor?'Por: '+pessoaLinha(a.autor)+' · ':''}${esc(new Date(a.createdAt).toLocaleString('pt-BR'))}</div><div class="info-box">${esc(a.texto)}</div>
+      <button class="btn btn-ok btn-sm mt" data-concluir>${a.tipo==='ERRO'?'Marcar como visto':'Responder e concluir'}</button></div>`).join(''));
+  const resolver=async(card,dados)=>{const r=await call('adm.alerta',Object.assign({id:card.dataset.al},dados));toast(r.message);await recarregarAdmin()};
+  box.querySelectorAll('[data-cad-ok]').forEach(b=>acao(b,async()=>{const r=await call('adm.cadastro',{id:b.dataset.cadOk,aprovar:true});toast(r.message);await recarregarAdmin()}));
+  box.querySelectorAll('[data-cad-no]').forEach(b=>acao(b,async()=>{const t=await perguntar('Recusar este cadastro? Os dados serão apagados e a pessoa recebe um e-mail. Motivo (opcional):','Ex.: não é servidor(a) da Secretaria','Recusar');if(t==null)return;const r=await call('adm.cadastro',{id:b.dataset.cadNo,aprovar:false,motivo:t});toast(r.message);await recarregarAdmin()}));
+  box.querySelectorAll('[data-incluir]').forEach(b=>{const c=b.closest('[data-al]');acao(b,()=>resolver(c,{acao:'incluir',nome:c.querySelector('[data-nome]').value,bairro:(c.querySelector('[data-bairro]')||{}).value,categoria:(c.querySelector('[data-cat]')||{}).value}),null)});
+  box.querySelectorAll('[data-corrigir]').forEach(b=>{const c=b.closest('[data-al]');acao(b,async()=>{const s=c.querySelector('[data-sug]').value;if(!s)throw new Error('Escolha na lista qual é o certo.');await resolver(c,{acao:'corrigir',sugestao:s})})});
+  box.querySelectorAll('[data-recusar]').forEach(b=>{const c=b.closest('[data-al]');acao(b,async()=>{const t=await perguntar('Escreva a resposta para a pessoa:','Ex.: esse local não pertence à Secretaria','Enviar resposta',true);if(!t)return;await resolver(c,{acao:'recusar',resposta:t})})});
+  box.querySelectorAll('[data-acesso]').forEach(b=>{const c=b.closest('[data-al]');acao(b,async()=>{if(!await confirmar('Já conferiu que é a própria pessoa? O e-mail da conta será trocado e ela recebe um link para criar senha nova.','Sim, corrigir'))return;await resolver(c,{acao:'corrigir',usuarioId:b.dataset.acesso,email:c.querySelector('[data-email]').value})})});
+  box.querySelectorAll('[data-concluir]').forEach(b=>{const c=b.closest('[data-al]');acao(b,async()=>{const t=await perguntar('Resposta (opcional; vai por e-mail para quem relatou):','O que foi feito','Concluir');if(t==null)return;await resolver(c,{acao:'concluir',resposta:t})})});
+  box.querySelectorAll('[data-rh-ok]').forEach(b=>acao(b,async()=>{if(!await confirmar('Aprovar esta troca? As outras candidaturas das duas pessoas serão canceladas.','Aprovar'))return;const r=await call('adm.troca.decidir',{id:b.dataset.rhOk,aprovar:true});toast(r.message);await recarregarAdmin()}));
+  box.querySelectorAll('[data-rh-no]').forEach(b=>acao(b,async()=>{const t=await perguntar('Motivo (vai para as duas pessoas):','Motivo','Não aprovar',true);if(!t)return;const r=await call('adm.troca.decidir',{id:b.dataset.rhNo,aprovar:false,motivo:t});toast(r.message);await recarregarAdmin()}));
+  box.querySelectorAll('[data-efet]').forEach(b=>acao(b,async()=>{if(!await confirmar('Marcar como efetivada? O bairro, o equipamento e o turno dos dois serão trocados no perfil.','Efetivar'))return;const r=await call('adm.troca.efetivar',{id:b.dataset.efet});toast(r.message);await recarregarAdmin()}));
+}
+
+/* --- Pessoas --- */
+const ROT_STATUS={ativo:['Ativo','badge-green'],aguardando:['Aguardando aprovação','badge-yellow'],inativo:['Desativado','badge-red']};
+function admPessoas(box,d){
+  box.innerHTML=`<div class="card"><div class="section-title">Pessoas (${d.usuarios.length})</div>
+    <div class="field"><input id="busca" placeholder="Buscar por nome, e-mail, telefone, equipamento ou bairro"></div>
+    <div class="filters"><select id="fSt">${opts(['ativo','aguardando','inativo'].map(x=>ROT_STATUS[x][0]),'','Todas as situações')}</select>
+      <select id="fRev"><option value="">Todas</option><option value="rev">Com bairro/equipamento fora da lista</option></select></div><div id="lista"></div></div>`;
+  const draw=()=>{
+    const q=v('busca').toLowerCase(),fs=v('fSt'),rev=v('fRev');
+    const list=d.usuarios.filter(u=>(!q||[u.nome,u.email,u.telefone,u.equipamento,u.bairro,u.cargo].join(' ').toLowerCase().includes(q))&&
+      (!fs||ROT_STATUS[u.status][0]===fs)&&(!rev||u.bairroRevisao||u.equipamentoRevisao));
+    $('lista').innerHTML=list.slice(0,200).map(u=>`<div class="person" data-p="${esc(u.id)}">
+      <div class="person-title">${esc(u.nome||'—')}</div>
+      <div class="badges">${u.papel==='admin'?'<span class="badge badge-yellow">Admin</span>':''}<span class="badge ${(ROT_STATUS[u.status]||['',''])[1]}">${esc((ROT_STATUS[u.status]||[u.status])[0])}</span>
+        ${u.bairroRevisao||u.equipamentoRevisao?'<span class="badge badge-red">Fora da lista</span>':''}</div>
+      <div class="person-sub">${esc(u.email||'Sem e-mail')} · ${esc(formatPhone(u.telefone))}</div>
+      <div class="person-sub">${pessoaLinha(u)} ${u.turno?'· '+esc(u.turno):''}${u.ultimoAcesso?' · último acesso '+esc(dataBR(u.ultimoAcesso)):''}</div>
+      ${u.protegido?'<div class="person-sub">Administrador: só o Administrador Geral altera.</div>':`<div class="admin-actions">
+        <button class="btn btn-ghost btn-sm" data-editar="${esc(u.id)}">Corrigir dados</button>
+        ${u.status!=='inativo'?`<button class="btn btn-ghost btn-sm" data-link="${esc(u.id)}">Mandar link de senha nova</button>`:''}
+        ${u.status==='aguardando'?'':`<button class="btn btn-sm ${u.status==='ativo'?'btn-danger':'btn-ok'}" data-ativo="${esc(u.id)}">${u.status==='ativo'?'Desativar':'Ativar'}</button>`}
+      </div>`}</div>`).join('')||'<div class="empty">Ninguém encontrado.</div>';
+    if(list.length>200)$('lista').innerHTML+='<p class="helper">Mostrando 200. Refine a busca.</p>';
+    ligar();
+  };
+  const ligar=()=>{
+    box.querySelectorAll('[data-editar]').forEach(b=>b.onclick=()=>{
+      const u=d.usuarios.find(x=>x.id===b.dataset.editar),w=b.closest('.person');
+      w.innerHTML=`<div class="person-title">Corrigir dados de ${esc(u.nome)}</div>
+        <div class="field"><label>Nome</label><input id="eN" value="${esc(u.nome)}"></div>
+        <div class="field"><label>Telefone</label><input id="eT" value="${esc(u.telefone?formatPhone(u.telefone):'')}"></div>
+        <div class="field"><label>E-mail de acesso</label><input id="eE" type="email" value="${esc(u.email)}"></div>
+        <label class="check"><input type="checkbox" id="eL" checked> <span>Se o e-mail mudar, mandar link de senha nova para o e-mail novo</span></label>
+        ${u.cargo||u.papel==='servidor'?camposLotacao('e',u):''}
+        <div class="btn-row"><button class="btn btn-primary btn-sm" id="eS">Salvar</button><button class="btn btn-ghost btn-sm" id="eC">Cancelar</button></div><div id="eM" class="msg"></div>`;
+      if($('eCargo'))ligarLotacao('e',w);
+      $('eC').onclick=draw;
+      acao($('eS'),async()=>{const r=await call('adm.pessoa.salvar',Object.assign({id:u.id,nome:v('eN'),telefone:v('eT'),email:v('eE'),enviarLink:$('eL').checked},$('eCargo')?dadosLotacao('e'):{}));toast(r.message);await recarregarAdmin()},'eM');
+    });
+    box.querySelectorAll('[data-link]').forEach(b=>acao(b,async()=>{
+      const u=d.usuarios.find(x=>x.id===b.dataset.link);
+      if(!await confirmar('Mandar para '+u.email+' um link para criar senha nova (vale 48 horas)? A senha atual continua valendo até a pessoa usar o link. Se o e-mail estiver errado, corrija antes em "Corrigir dados".','Mandar link'))return;
+      const r=await call('adm.pessoa.link',{id:u.id});toast(r.message);
+    }));
+    box.querySelectorAll('[data-ativo]').forEach(b=>acao(b,async()=>{
+      const u=d.usuarios.find(x=>x.id===b.dataset.ativo),des=u.status==='ativo';
+      if(des&&!await confirmar('Desativar? A pessoa sai de todos os aparelhos, a vaga dela é encerrada e as candidaturas canceladas.','Desativar',true))return;
+      const r=await call('adm.pessoa.ativo',{id:u.id,ativo:!des});toast(r.message);await recarregarAdmin();
+    }));
+  };
+  $('busca').oninput=draw;$('fSt').onchange=draw;$('fRev').onchange=draw;draw();
+}
+
+/* --- Listas --- */
+const ROT_LISTA={EQUIPAMENTO:'Equipamentos',BAIRRO:'Bairros',CARGO:'Cargos',TURNO:'Turnos'};
+function admListas(box,d){
+  S.listaTipo=S.listaTipo||'EQUIPAMENTO';
+  const t=S.listaTipo,itens=d.listas[t],eq=t==='EQUIPAMENTO',bas=d.listas.BAIRRO.filter(x=>x.ativo).map(x=>x.nome);
+  const cats=[...new Set(d.listas.EQUIPAMENTO.map(x=>x.categoria).filter(Boolean))].sort();
+  box.innerHTML=`<div class="admin-tabs sub">${Object.keys(ROT_LISTA).map(k=>`<button class="${k===t?'active':''}" data-lt="${k}">${ROT_LISTA[k]}</button>`).join('')}</div>
+    <div class="card"><div class="section-title">Incluir em ${ROT_LISTA[t].toLowerCase()}</div>
+      <div class="field"><input id="nNome" placeholder="Nome" maxlength="80"></div>
+      ${eq?`<div class="field"><select id="nBairro">${opts(bas,'','Bairro do equipamento…')}</select></div>
+        <div class="field"><input id="nCat" list="cats" placeholder="Tipo (CRAS, CREAS, Centro POP…)" maxlength="40"><datalist id="cats">${cats.map(c=>`<option value="${esc(c)}">`).join('')}</datalist></div>`:''}
+      <button class="btn btn-primary btn-sm" id="nBtn">Incluir</button><div id="nMsg" class="msg"></div></div>
+    <div class="card"><div class="section-title">${ROT_LISTA[t]} (${itens.filter(x=>x.ativo).length} ativos)</div>
+      <div class="field"><input id="lBusca" placeholder="Buscar"></div><div id="lItens"></div>
+      <p class="helper">Renomear atualiza todas as pessoas e vagas que usam o item. Desativar tira da lista de escolha, mas quem já usa continua.</p></div>`;
+  box.querySelectorAll('[data-lt]').forEach(b=>b.onclick=()=>{S.listaTipo=b.dataset.lt;admListas(box,d)});
+  acao($('nBtn'),async()=>{const r=await call('adm.lista.salvar',{tipo:t,nome:v('nNome'),bairro:v('nBairro'),categoria:v('nCat'),ativo:true});toast(r.message);await recarregarAdmin()},'nMsg');
+  const draw=()=>{
+    const q=v('lBusca').toLowerCase();
+    $('lItens').innerHTML=itens.filter(x=>!q||(x.nome+' '+x.bairro+' '+x.categoria).toLowerCase().includes(q)).map((x,i)=>`<div class="person" data-i="${itens.indexOf(x)}">
+      <div class="person-title">${esc(x.nome)} ${!x.ativo?'<span class="badge badge-red">Desativado</span>':''}</div>
+      <div class="person-sub">${eq?esc(x.categoria||'Sem tipo')+' · '+esc(x.bairro)+' · ':''}${x.usos} pessoa(s)</div>
+      <div class="admin-actions"><button class="btn btn-ghost btn-sm" data-ed>Editar</button><button class="btn btn-sm ${x.ativo?'btn-danger':'btn-ok'}" data-at2>${x.ativo?'Desativar':'Ativar'}</button></div></div>`).join('')||'<div class="empty">Nada encontrado.</div>';
+    $('lItens').querySelectorAll('[data-at2]').forEach(b=>{const x=itens[b.closest('[data-i]').dataset.i];acao(b,async()=>{const r=await call('adm.lista.salvar',{tipo:t,antigo:x.nome,nome:x.nome,bairro:x.bairro,categoria:x.categoria,ativo:!x.ativo});toast(r.message);await recarregarAdmin()})});
+    $('lItens').querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{
+      const w=b.closest('[data-i]'),x=itens[w.dataset.i];
+      w.innerHTML=`<div class="field"><label>Nome</label><input data-n value="${esc(x.nome)}" maxlength="80"></div>
+        ${eq?`<div class="field"><label>Bairro</label><select data-b>${opts(bas,x.bairro,'Selecione…')}</select></div><div class="field"><label>Tipo</label><input data-c value="${esc(x.categoria)}" maxlength="40"></div>`:''}
+        <div class="btn-row"><button class="btn btn-primary btn-sm" data-s>Salvar</button><button class="btn btn-ghost btn-sm" data-x>Cancelar</button></div><div class="msg" data-m></div>`;
+      w.querySelector('[data-x]').onclick=draw;
+      const s=w.querySelector('[data-s]');
+      s.onclick=null;acao(s,async()=>{try{const r=await call('adm.lista.salvar',{tipo:t,antigo:x.nome,nome:w.querySelector('[data-n]').value,bairro:(w.querySelector('[data-b]')||{}).value,categoria:(w.querySelector('[data-c]')||{}).value,ativo:x.ativo});toast(r.message);await recarregarAdmin()}catch(e){const m=w.querySelector('[data-m]');m.className='msg err';m.textContent=limpaErro(e)}});
+    });
+  };
+  $('lBusca').oninput=draw;draw();
+}
+
+/* --- Administradores (master) --- */
+function admAdmins(box,d){
+  const master=d.nivel>=3;
+  const candidatos=d.usuarios.filter(u=>u.status==='ativo'&&u.papel==='servidor');
+  box.innerHTML=`<div class="card"><div class="section-title">Administradores</div>
+    <p class="helper">${master?'O Administrador Geral é permanente. Administradores cuidam de pendências, pessoas e listas; não veem logs. Marque <b>Pode criar e remover administradores</b> para deixar um admin gerenciar os outros.':
+      'Você tem permissão para dar e tirar acesso de administrador. Quem também tem essa permissão só o Administrador Geral remove. Ele recebe um e-mail a cada mudança.'}</p>
+    ${d.admins.map(a=>`<div class="person"><div class="person-title">${esc(a.nome||a.email)}</div>
+      <div class="person-sub">${a.protegido?'Administrador Geral':'Administrador'}${a.voce?' (você)':''} · ${esc(a.email)}${a.podeCriarAdmin?' · <span class="badge badge-yellow">Gerencia admins</span>':''}</div>
+      ${master&&!a.protegido?`<label class="check"><input type="checkbox" data-perm="${esc(a.id)}" ${a.podeCriarAdmin?'checked':''}> <span>Pode criar e remover administradores</span></label>`:''}
+      ${a.removivel?`<button class="btn btn-danger btn-sm" data-rem="${esc(a.id)}">Remover acesso de admin</button>`:''}</div>`).join('')}
+  </div>
+  <div class="card"><div class="section-title">Novo administrador</div>
+    <div class="field"><label>Dar acesso de administrador para</label><select id="novoAdm"><option value="">Selecione…</option>${candidatos.map(u=>`<option value="${esc(u.id)}">${esc(u.nome)} — ${esc(u.cargo)} · ${esc(u.equipamento)}</option>`).join('')}</select>
+      <p class="helper">A pessoa precisa já ter cadastro ativo no sistema.</p></div>
+    <button class="btn btn-primary" id="addAdm">Adicionar administrador</button><div id="aM" class="msg"></div></div>`;
+  box.querySelectorAll('[data-rem]').forEach(b=>acao(b,async()=>{if(!await confirmar('Remover este administrador? A pessoa continua como servidor(a).','Remover',true))return;const r=await call(master?'master.admin.remover':'adm.admin.remover',{id:b.dataset.rem});toast(r.message);await recarregarAdmin()}));
+  box.querySelectorAll('[data-perm]').forEach(c=>c.onchange=async()=>{c.disabled=true;
+    try{const r=await call('master.admin.permissao',{id:c.dataset.perm,pode:c.checked});toast(r.message);await recarregarAdmin()}
+    catch(e){c.checked=!c.checked;c.disabled=false;const t=limpaErro(e);if(t!=='__tratado')toast(t)}});
+  acao($('addAdm'),async()=>{if(!v('novoAdm'))throw new Error('Escolha a pessoa.');
+    const p=candidatos.find(u=>u.id===v('novoAdm'));
+    if(!await confirmar(`Dar acesso de administrador para ${p?p.nome:'esta pessoa'}? Ela vai poder aprovar cadastros, corrigir dados de pessoas e mexer nas listas.`,'Dar acesso'))return;
+    const r=await call(master?'master.admin.add':'adm.admin.add',{id:v('novoAdm')});toast(r.message);await recarregarAdmin()},'aM');
+}
+
+/* --- Logs (master) --- */
+function admLogs(box,d){
+  box.innerHTML=`<div class="card"><div class="section-title">Últimos 300 registros</div>
+    <div class="field"><input id="lq" placeholder="Filtrar (ação, pessoa, detalhe)"></div>
+    <label class="check"><input type="checkbox" id="lErr"> <span>Só falhas e erros</span></label><div id="ll" class="mt"></div>
+    <p class="helper">Registros com mais de 1 ano são apagados sozinhos (LGPD).</p></div>`;
+  const draw=()=>{
+    const q=v('lq').toLowerCase(),so=$('lErr').checked;
+    $('ll').innerHTML=d.logs.filter(l=>(!so||!l.sucesso)&&(!q||[l.acao,l.autorNome,l.autorId,l.alvo,l.detalhes].join(' ').toLowerCase().includes(q))).map(l=>`<div class="person">
+      <div class="person-title">${l.sucesso?'':'⚠ '}${esc(l.acao)}</div>
+      <div class="person-sub">${esc(new Date(l.timestamp).toLocaleString('pt-BR'))} · por: ${esc(l.autorNome||l.autorId||'—')} · alvo: ${esc(l.alvo||'—')}</div>
+      ${l.detalhes?`<div class="person-sub">${esc(l.detalhes)}</div>`:''}</div>`).join('')||'<div class="empty">Nada encontrado.</div>';
+  };
+  $('lq').oninput=draw;$('lErr').onchange=draw;draw();
+}
+</script>
+
+<script>init();</script>
 </body>
 </html>
