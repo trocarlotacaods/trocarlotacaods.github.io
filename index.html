@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#003D73">
+<meta name="description" content="Troca de Lotação — Secretaria Municipal de Desenvolvimento Social de Uberlândia">
+<title>Troca de Lotação · Desenvolvimento Social</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23005BAA'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'%3E%E2%87%84%3C/text%3E%3C/svg%3E">
+<style>
+  html,body{margin:0;height:100%;background:#F2F5F9;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+  #app{position:fixed;inset:0;width:100%;height:100%;border:0;display:block}
+  #carregando{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:#475569;font-size:18px;font-weight:700;background:#F2F5F9;transition:opacity .3s}
+  #carregando.some{opacity:0;pointer-events:none}
+  .giro{width:40px;height:40px;border:4px solid #DDE5ED;border-top-color:#005BAA;border-radius:50%;animation:g .8s linear infinite}
+  @keyframes g{to{transform:rotate(360deg)}}
+  #direto{display:none;font-size:16px;color:#003D73}
+  @media (prefers-color-scheme: dark){html,body,#carregando{background:#0F172A;color:#93A2B8}#direto{color:#8FC0FA}}
+</style>
+</head>
+<body>
+<!--
+  Troca de Lotação — página oficial (GitHub Pages).
+  Ela abre o sistema do Google Apps Script dentro de um frame. Assim o endereço fica fixo e curto,
+  e não acontece o erro do "/u/1/" (quem tem mais de uma conta Google aberta no navegador
+  recebia erro de autorização ao abrir o link direto do Apps Script).
+  Se publicar uma implantação NOVA (outro ID), troque o endereço em APP abaixo.
+  Ao só criar "Nova versão" na mesma implantação, o endereço continua o mesmo: não precisa mexer aqui.
+-->
+<div id="carregando"><div class="giro"></div><div>Abrindo a Troca de Lotação…</div><a id="direto" target="_top" rel="noopener">Não abriu? Toque aqui.</a></div>
+<iframe id="app" title="Troca de Lotação" allow="clipboard-write" referrerpolicy="no-referrer"></iframe>
+<script>
+  var APP = 'https://script.google.com/macros/s/AKfycbwuVPSrlq49T7RpP8zT3LtdR2QMJt-rKEQfllwm8eeP8B1kipyasv209nQJ3ZVmIJEc/exec';
+  // repassa só o código de senha nova (?t=...) dos links enviados por e-mail
+  var t = (new URLSearchParams(location.search).get('t') || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 40);
+  var url = APP + (t ? '?t=' + t : '');
+  if (t) { try { history.replaceState(null, '', location.pathname); } catch (e) {} }
+  var f = document.getElementById('app'), c = document.getElementById('carregando'), d = document.getElementById('direto');
+  d.href = url;
+  f.onload = function () { c.className = 'some'; };
+  setTimeout(function () { d.style.display = 'block'; }, 12000);
+  f.src = url;
+</script>
+</body>
+</html>
